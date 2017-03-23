@@ -1,0 +1,111 @@
+{% extends "personal/header.html" %}
+
+{% block content %}
+<table class = "table">
+    <tbody id = "input">
+        <tr>
+            <td>
+                <input type="text" class="btn btn-default" id ='name' placeholder = "Name"/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="ones">1s</label>
+                <input type="number" class="btn btn-default" id="ones" value = 0 min="0" max = "100" onchange = "changeOwed('ones')" />
+            </td>
+            <td>
+                <label for="fives">5s</label>
+                <input type="number" class="btn btn-default" id="fives" value = 0 min="0" max = "100" onchange = "changeOwed('fives')" />
+            </td>
+            <td>
+                <label for="tens">10s</label>
+                <input type="number" class="btn btn-default" id="tens" value = 0 min="0" max = "100" onchange = "changeOwed('tens')"/>
+            </td>
+            <td>
+                <label for="twenties">20s</label>
+                <input type="number" class="btn btn-default" id="twenties" value = 0 min="0" max = "100" onchange = "changeOwed('twenties')"/>
+            </td>
+            <td>
+                <label for="fifties">50s</label>
+                <input type="number" class="btn btn-default" id="fifties" value = 0 min="0" max = "100" onchange = "changeOwed('fifties')"/>
+            </td>
+            <td>
+                <label for="hundreds">100s</label>
+                <input type="number" class="btn btn-default" id="hundreds" value = 0 min="0" max = "100" onchange = "changeOwed('hundreds')"/>
+            </td>
+            <td>
+                <label for="personOwed">Owed</label><input type="number" class="btn btn-default" id = "personOwed" min="0" max="18600" value=0 />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="onesNeeded">1s Needed</label>
+                <input type="number" class="btn btn-default" id="onesNeeded" value = 0 min="0" max = "100"/>
+            </td>
+            <td>
+                <label for="fivesNeeded">5s Needed</label>
+                <input type="number" class="btn btn-default" id="fivesNeeded" value = 0 min="0" max = "100"/>
+            </td>
+            <td>
+                <label for="tensNeeded">10s Needed</label>
+                <input type="number" class="btn btn-default" id="tensNeeded" value = 0 min="0" max = "100"/>
+            </td>
+            <td>
+                <label for="twentiesNeeded">20s Needed</label>
+                <input type="number" class="btn btn-default" id="twentiesNeeded" value = 0 min="0" max = "100"/>
+            </td>
+            <td>
+                <label for="fiftiesNeeded">50s Needed</label>
+                <input type="number" class="btn btn-default" id="fiftiesNeeded" value = 0 min="0" max = "100"/>
+            </td>
+            <td>
+                <label for="hundredsNeeded">100s Needed</label>
+                <input type="number" class="btn btn-default" id="hundredsNeeded" value = 0 min="0" max = "100"/>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<br>
+<br>
+<input id="clickMe" class="btn btn-default" type="button" value="Add Person" onclick="addPerson();" />
+<br><br>
+<table class = "table"><tbody id = 'people'>
+        <tr>
+            <th>Name</th>
+            <th>1s</th>
+            <th>5s</th>
+            <th>10s</th>
+            <th>20s</th>
+            <th>50s</th>
+            <th>100s</th>
+            <th>Bank</th>
+            <th>Owed</th>
+            <th>1s Needed</th>
+            <th>5s Needed</th>
+            <th>10s Needed</th>
+            <th>20s Needed</th>
+            <th>50s Needed</th>
+            <th>100s Needed</th>
+        </tr>
+    </tbody>
+</table>
+{% for person in people %}
+<p>{{person}}</p>
+{% endfor %}
+<input type = "hidden" id = prevAmounts value = '{"ones": 0, "fives":0, "tens":0, "twenties":0, "fifties":0, "hundreds":0}'/>
+<form action="" method = "post" id="peopleForm">
+    {% csrf_token %}
+    <label for="totalBankVsTotalOwed">Total Bank - Total Owed =</label>
+    <input id = "totalBankVsTotalOwed" name = "totalBankVsTotalOwed" value = 0 class="btn btn-default" readonly/>
+    <br>
+    <input type = "hidden" name = "hiddenPeople" value = "[]" class = "btn btn-default" id = "hiddenPeople"/>
+    <input type = "button" class = "btn btn-default" id = "findSolution" value = "Find Solution" onclick="checkBank()"/>
+</form>
+
+{% load staticfiles %}
+<script type="text/javascript" src="{% static 'spareChange/spareChange.js' %}"></script>
+{% endblock %}
+
+{% block description %}
+{% include "spareChange/includes/descriptionSnippet.html" %}
+{% endblock %}

@@ -1,0 +1,88 @@
+{% extends "personal/header.html" %}
+{% block content %}
+    {% if failMessage %}
+        {{failMessage}}
+    {% else %}
+        <h3>Before</h3>
+        <table class="table">
+            <tbody>
+                <tr>
+                    <th>Name</th>
+                    <th>1s</th>
+                    <th>5s</th>
+                    <th>10s</th>
+                    <th>20s</th>
+                    <th>50s</th>
+                    <th>100s</th>
+                </tr>
+                {% for person in beforeModel %}
+                    <tr>
+                        <td><h4>{{person.name}}</h4></td>
+                        <td><p>{{person.ones}}</p></td>
+                        <td><p>{{person.fives}}</p></td>
+                        <td><p>{{person.tens}}</p></td>
+                        <td><p>{{person.twenties}}</p></td>
+                        <td><p>{{person.fifties}}</p></td>
+                        <td><p>{{person.hundreds}}</p></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <h3>After</h3>
+        <table class="table">
+            <tbody>
+                <tr>
+                    <th>Name</th>
+                    <th>1s</th>
+                    <th>5s</th>
+                    <th>10s</th>
+                    <th>20s</th>
+                    <th>50s</th>
+                    <th>100s</th>
+                </tr>
+                {% for person in afterModel %}
+                    <tr>
+                        <td><h4>{{person.name}}</h4></td>
+                        <td><p>{{person.ones}}</p></td>
+                        <td><p>{{person.fives}}</p></td>
+                        <td><p>{{person.tens}}</p></td>
+                        <td><p>{{person.twenties}}</p></td>
+                        <td><p>{{person.fifties}}</p></td>
+                        <td><p>{{person.hundreds}}</p></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <h3>Difference</h3>
+        <table class="table">
+            <tbody>
+                <tr>
+                    <th>Name</th>
+                    <th>1s</th>
+                    <th>5s</th>
+                    <th>10s</th>
+                    <th>20s</th>
+                    <th>50s</th>
+                    <th>100s</th>
+                </tr>
+                {% for person in differenceModel %}
+                <tr>
+                        <td><h4>{{person.name}}</h4></td>
+                        <td><p>{{person.ones}}</p></td>
+                        <td><p>{{person.fives}}</p></td>
+                        <td><p>{{person.tens}}</p></td>
+                        <td><p>{{person.twenties}}</p></td>
+                        <td><p>{{person.fifties}}</p></td>
+                        <td><p>{{person.hundreds}}</p></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+    <br>
+    <a href=/spareChange>Try Again?</a>
+{% endblock %}
+
+{% block description %}
+{% include "spareChange/includes/descriptionSnippet.html" %}
+{% endblock %}

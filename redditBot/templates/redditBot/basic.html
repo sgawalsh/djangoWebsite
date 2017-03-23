@@ -1,0 +1,47 @@
+{% extends "personal/header.html" %}
+
+{% block content %}
+
+<form action = "/redditBot/" method = "post">
+    {% csrf_token %}
+    <label class="checkbox-inline">
+      <input type="checkbox" id="inlineCheckbox1" name = "checks" value="programming">Programming
+    </label>
+    <label class="checkbox-inline">
+      <input type="checkbox" id="inlineCheckbox2" name = "checks" value="learnProgramming">learnProgramming
+    </label>
+    <label class="checkbox-inline">
+      <input type="checkbox" id="inlineCheckbox3" name = "checks" value="python">Python
+    </label>
+    <label class="checkbox-inline">
+      <input type="checkbox" id="inlineCheckbox4" name = "checks" value="learnPython">learnPython
+    </label>
+
+    <select id = 'timeChoice' name = "timeChoice"class="btn btn-default">
+        <option value="Hour">Hour</option>
+        <option value="Day">Day</option>
+        <option value="Week">Week</option>
+        <option value="Month">Month</option>
+        <option value="Year">Year</option>
+        <option value="All">All</option>
+    </select>
+    <button id="clickMe" class="btn btn-default" type="submit">Display Best Posts</button>
+</form>
+<table>
+    <tbody>
+        <tr>
+            <th style="min-width:80px"><center>Rank</center></th>
+            <th style="min-width:100px"><center>Percentile</center></th>
+            <th style="min-width:100px"><center>Outstandingness</center></th>
+            <th style="min-width:100px"><center>Score</center></th>
+            <th style="min-width:100px"><center>Post Info</center></th>
+{% for post in posts %}
+<tr><td><center>{{ forloop.counter }}</center></td><td><center>({{post.percentile}})</center></td><td><center>({{ post.outstandingness }})</center></td><td><center>{{ post.score }}</center></td><td><a href = {{post.url}} >{{ post.title }}</a> By <a href = "https://www.reddit.com/u/{{post.author}}">{{post.author}}</a> in <a href ="https://www.reddit.com/r/{{post.inSub}}">/r/{{post.inSub}}</a> on {{post.creationDate}} <a href = {{post.commentsUrl }}>Comments</a></td></tr>
+{% endfor %}
+    </tbody>
+</table>
+{% endblock %}
+
+{% block description %}
+{% include "personal/includes/descriptionModal.html" with modalTitle="Reddit Bot" modalBody="<p>The goal of this project was to provide a solution to a problem that appears when using 'multi-reddits' on reddit.com.</p><p>Warning!!! Boring explanation of reddit ahead! If you know how posts work on reddit feel free to skip ahead a paragraph.</p><p>Reddit is a site where users submit links to certain 'subreddits'. Each subreddit caters to a certain interest (e.g. /r/hockey has links about the NHL or international hockey, /r/recipes where users post recipes they find or created, etc.) There are thousands of these which cover an enormous range of subjects. In each subreddit, there is a post ranking system where users can vote on posts they find interesting. Posts that are heavily voted up, are will trend towards the top of this system, however as a post grows older, it will fall and new content takes its place. One of the other main ways posts can be sorted is by top score. This removes the time constraint so older posts are not penalized using this method. The user can use this setting to easily find the top posts from the last hour, day, week, month, year, and entire history of the subreddit.</p><p>Multireddits are simply several different subreddits merged together. Someone might create a multireddit that lets a user quickly see the best content from several related subreddits at once. The problem with this system is that if there is a large disparity between the amounts of users on different subreddits within the same multireddit, then when the user sorts the multireddit by top score, instead of showing the most interesting content from all subreddits over a certain time period, the feed will be dominated by the larger subreddits which naturally have more votes.</p><p>This problem was solved in two parts by using reddit bots created using <a href='https://praw.readthedocs.io/en/latest/'>PRAW</a> (Python Reddit API Wrapper). First subreddit data can be added to the django database by running a script which sorts subreddits by the top scores for the day, week, month, year, and all-time. For each of these rankings, the average score and standard deviation is calculated and added to the database. These values are later used to calculate what percent a post's score falls in compared to other posts from that subreddit and time frame.</p><p>On this page, the user can choose from a list of selected subreddits and assign a time frame, then run a script which returns a list of posts from those subreddits and time frame ordered by percentile their percentile scores. By using this system of ranking posts, the bigger subreddit's posts are not favoured and instead the posts are ordered by how outstanding the post is compared to the other posts from that subreddit. I believe that this results in a more interesting list of content than the default top score sorting method.</p>" %}
+{% endblock %}

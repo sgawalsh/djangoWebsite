@@ -1,0 +1,10 @@
+# ignore project settings, .pyc, .pyo, .pyd files, /__pycache__ contents, aboutMe app
+
+*.pyc
+*.pyo
+*.pyd
+
+/myProj*
+/aboutMe*
+
+/__pycache__/

@@ -1,0 +1,22 @@
+{% extends "personal/header.html" %}
+
+{% block content %}
+<label for="inValue">Input</label>
+<input type="number" class="btn btn-default" id ='inValue' value=0>
+<input id="addNumber" class="btn btn-default" type="button" value="Add Number" onclick="insertNode(parseInt(document.getElementById('inValue').value));"/>
+<input id="addRandom" class="btn btn-default" type="button" value="Add Random" onclick="addRandom();"/>
+<input id="extractRoot" class="btn btn-default" type="button" value="Extract Root" onclick="extractRoot();"/>
+<input id="extractValue" class="btn btn-default" type="button" value="Extract Value" onclick="extractValue();"/>
+<br><br>
+
+<table class = "table"><tbody id = 'structTable' rowcount = 0></tbody></table>
+
+{% load staticfiles %}
+<script type="text/javascript" src="{% static 'dataStructures/printStructure.js' %}"></script>
+<script type="text/javascript" src="{% static 'dataStructures/heap.js' %}"></script>
+
+{% endblock %}
+
+{% block description %}
+{% include "personal/includes/descriptionModal.html" with modalTitle="Heap" modalBody="<p>This page let's the user build and edit their own heap data structure. This page uses a max-heap meaning that the value of any parent node must be greater than those of its children.</p><p>The user has several simple functions letting them edit the heap. The user can add a node, either by choosing a specific value with 'Add Number', or by adding a randomly generated value between -100 to 100 with 'Add random'. The user also has the ability to extract values from the heap, either with 'Extract Root' button which extracts the top node (which is always the largest in a max-heap), or can choose a specific value to be extracted with 'Extract Value'. In both cases the heap will automatically be restructured to maintain its max-heap property.</p>"%}
+{% endblock %}

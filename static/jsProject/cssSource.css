@@ -1,0 +1,9 @@
+.myJS{
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+.myJsTd {
+    padding: 5px;
+    text-align: left;
+}

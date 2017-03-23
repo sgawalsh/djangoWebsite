@@ -1,0 +1,24 @@
+{% extends "personal/header.html" %}
+
+{% block content %}
+
+<input type="number" class="btn btn-default" id ='length' value = 10>
+<select id = 'sortChoice' class="btn btn-default">
+    <option value="BogoSort">BogoSort</option>
+    <option value="BubbleSort">BubbleSort</option>
+    <option value="HeapSort">HeapSort</option>
+    <option value="MergeSort">MergeSort</option>
+    <option value="QuickSort">QuickSort</option>
+</select>
+<input id="clickMe" class="btn btn-default" type="button" value="Create Array" onclick="generateArray();" />
+<br>
+<table class = "table"><tbody id = 'jsTable' rowcount = 0></tbody></table>
+<input id = "iterateAll" type = "button" class = 'btn btn-default' value = "Iterate All" onclick = "iterateAll(document.getElementById('jsTable'));" />
+{%load staticfiles %}
+<script src="{% static 'personal/js/jquery-3.1.0.js'%}" type="text/javascript"></script>
+<script src="{% static 'jsProject/jsSource.js'%}" type="text/javascript"></script>
+{% endblock %}
+
+{% block description %}
+{% include "personal/includes/descriptionModal.html" with modalTitle="Array Sorting" modalBody="<p>The idea of this project is to help the user visualise how different sort algorithms actually function, and how the performances of different sorting algorithms change as the length of the array is increased.</p><p>The use of this app is fairly straightforward. The user creates an array of a certain length and assigns a sort algorithm.The array is then added to a table on the page. For each array, three buttons are available (except for bogosort). 'Delete Row' removes the row from the table, 'Iterate Array' performs one iteration of the sort algorithm, and 'Timed Solve' performs the algorithm until the array is solved and returns the time taken for the algorithm to finish.</p><p>In addition to this the user has the option to iterate all arrays at once. However it should be noted that some of the iterations are more complex than others, and can't necessarily be used to judge which algorithm is most efficient, but instead should be used as a visualization of that sort method.</p>"%}
+{% endblock %}

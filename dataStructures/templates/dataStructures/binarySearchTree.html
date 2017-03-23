@@ -1,0 +1,24 @@
+{% extends "personal/header.html" %}
+
+{% block content %}
+
+<label for="inValue">Input</label>
+<input type="number" class="btn btn-default" id ='inValue' value=0>
+<input id="addNumber" class="btn btn-default" type="button" value="Add Number" onclick="addNumber(parseInt(document.getElementById('inValue').value));"/>
+<input id="addRandom" class="btn btn-default" type="button" value="Add Random" onclick="addRandom();"/>
+<input id="searchButton" class="btn btn-default" type="button" value="Search Value" onclick="bstSearch(searchVal = parseInt(document.getElementById('inValue').value), 0, 1, JSON.parse(sessionStorage.getItem('bst')));"/>
+<input id="balanceButton" class="btn btn-default" type="button" value="Balance Tree" onclick="balanceCaller()"/>
+<input id="devValue" class="btn btn-default" type="button" value="Delete Value" onclick="delValue()"/>
+<label for="averageNodeAccesses">Average Node Accesses </label>
+<input id = "averageNodeAccesses" name = "averageNodeAccesses" value = 0 class="btn btn-default" readonly/>
+
+<table class = "table"><tbody id = 'structTable' rowcount = 0></tbody></table>
+
+{% load staticfiles %}
+<script type="text/javascript" src="{% static 'dataStructures/printStructure.js' %}"></script>
+<script type="text/javascript" src="{% static 'dataStructures/binarySearchTreeJs.js' %}"></script>
+{% endblock %}
+
+{% block description %}
+{% include "personal/includes/descriptionModal.html" with modalTitle="Binary Search Tree" modalBody="<p>This page let's the user build and edit their own binary search tree data structure. The binary search tree is a data structure in which each left child node must have a value less than its parent, and each right child node's value must be greater than that of its parent.</p><p>Several functions are available to the user to change the tree. The user can add a specific value selected in the input field, or add a randomly generated number between -100 to 100. In both cases, a function will travel through the tree checking values and the new node will automatically be added to the correct spot. The user can also delete specific values from the tree, and the tree will autmomatically restructured without the deleted node. The user is also able to trigger a search function which gives the user info about the node traversals necessary while searching the tree. The user also has the option to balance the tree, which uses <a href='https://en.wikipedia.org/wiki/File:Tree_Rebalancing.gif'>AVL tree rotations</a> in order to decrease the depth of the tree. Trees can be searched more efficiently when each level of the tree is full, the balancing function checks the child branches of each node for imbalances and, if it finds a difference of two or greater between the branches, performs a rotation to balance the tree. After each function, the 'Average Node Accesses' value is updated, giving the user info about how easily the tree can be searched.</p>"%}
+{% endblock %}

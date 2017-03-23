@@ -1,0 +1,3 @@
+Load with largest bills possible until 'owed' is 0
+if money available > owed: take away largest bill()
+try every combo that gets 'owed' to 0, starting largest first
