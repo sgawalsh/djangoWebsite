@@ -1,0 +1,20 @@
+{% extends "personal/header.html" %}
+
+{% block content %}
+<label for="rowNum">Rows</label>
+<input type="number" class="btn btn-default" id ='rowNum' value=5 min="1" max="20">
+<label for="colNum">Columns</label>
+<input type="number" class="btn btn-default" id ='colNum' value=5 min="1" max="20">
+<input id="stepButton" class="btn btn-default" type="button" value="Create Grid" onclick="createGrid()"/>
+<br><br>
+
+<table class = "table table-responsive"><tbody id = 'gridTable'></tbody></table>
+
+{% load staticfiles %}
+<script type="text/javascript" src="{% static 'aStar/aStarJs.js' %}"></script>
+<!--<script type="text/javascript" src="{% static 'personal/js/jquery-3.1.0.js' %}"></script>-->
+{% endblock %}
+
+{% block description %}
+{% include "personal/includes/descriptionModal.html" with modalTitle="A* Pathfinder" modalBody="<p>This project uses an A-star alogorithm to connect two nodes on a grid. The user chooses the start and end points, and is able to build walls for the algorithm to navigate. The algorithm will then find a path between the two points and the resulting path is indicated byt changing the colour of the nodes.</p><p>The algorithm is initialized with the position of the first cell. It then examines the cells surrounding it, ignoring any walls or out-of-bounds locations, and assigns a G cost, which is based on the examined cell's position relative to the current cell. Cells that are connected vertically or horizontally are given a score of 10, whereas cells that are connected diagonally are given a score of 14, 14 being roughly equal to the length of a hypotenuse of a triangle with two sides of length 10. The cells that are assigned scores are added to a list of cells to be examined.</p><p>On each subsequent iteration of the algorithm, the cell with the lowest F cost is chosen as the cell to be examined. The F cost is the sum of the G cost, which was assigned when the cell was added to the list, and the H cost, which was assigned when the grid was generated. The H cost is the product of the heuristic used, which can vary between algorithms, but is meant to give an estimation of how far a given cell is from the target cell. This version of the algorithm uses the Manhattan method to generate the H cost. This method counts the number of steps from the cell to the target without travelling diagonally and ignoring any walls and assigns a value based on the number of steps.</p><p>The algorithm keeps selecting the cell with the lowest available F cost from the list to examine until the target cell is reached. If the list runs out before the target is reached, that means that no path is available between the start and the target.</p>"%}
+{% endblock %}

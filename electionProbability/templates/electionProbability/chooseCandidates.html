@@ -11,7 +11,7 @@
     <input id="clickMe" class="btn btn-default" type="button" value="Add Candidate" onclick="addCandidate(document.getElementById('canName').value);" />
     <br>
     <table class = "table"><tbody id = 'candidates'></tbody></table>
-    <input type = "hidden" name = "candidatesList" value = "[]" class = "btn btn-default" id = "candidatesList"/>
+    <input type = "hidden" name = "candidatesList" value = "[]" class = "btn btn-default" id = "candidatesList" onLoad = "document.getElementById('candidatesList').value = '[]'"/>
     <input type = "submit" class = "btn btn-default" id = "setStates" value = "Set States"/>
 </form>
 {%load staticfiles %}
