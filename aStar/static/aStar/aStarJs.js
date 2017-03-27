@@ -159,7 +159,7 @@ function drawSuccessPath(grid, pathArray){//changes class of divs in array to 's
 	sessionStorage.setItem("successPath", JSON.stringify(pathArray))
 }
 
-function assignHVals(grid){//assigns Hvalues according to manhattan method
+function assignHValsManhattan(grid){//assigns Hvalues according to manhattan method, not used
 	var targCoord = JSON.parse(sessionStorage.getItem("end"))
 	
 	for (let i = 0; i < grid.length; i++){
@@ -170,7 +170,18 @@ function assignHVals(grid){//assigns Hvalues according to manhattan method
 	}
 }
 
-function indexOfMinFVal(arr) {//finds index of array element with smallest fValue
+function assignHVals(grid){//assigns Hvalues 14/diagonal step, 10/vertical or horizontal step
+	var targCoord = JSON.parse(sessionStorage.getItem("end"))
+	
+	for (let i = 0; i < grid.length; i++){
+		for (let j = 0; j < grid[i].length; j++){
+			grid[i][j].hVal = (Math.min(Math.abs(j - targCoord[1]), Math.abs(i - targCoord[0])) * 14) + (Math.abs(Math.abs(j - targCoord[1]) - Math.abs(i - targCoord[0])) * 10)
+			grid[i][j].fVal = grid[i][j].hVal
+		}
+	}
+}
+
+function indexOfMinFVal(arr){//finds index of array element with smallest fValue
 	var min = arr[0].fVal
 	var minIndex = 0
 
@@ -191,8 +202,7 @@ function findPath(openList, closedList, target, grid){
 	if (openList.length == 0){//no solution
 		return false
 	}
-	var index = indexOfMinFVal(openList)
-	var currentCell = openList.splice(index, 1)[0]
+	var currentCell = openList.splice(indexOfMinFVal(openList), 1)[0]
 	closedList.push(currentCell)
 	if (currentCell == target){
 		return true
@@ -221,7 +231,7 @@ function findPath(openList, closedList, target, grid){
 					else {potG = currentCell.gVal + 14}
 					if (potG <= newCell.gVal){
 						newCell.gVal = potG
-						newCell.parent = currentCell
+						newCell.par = currentCell
 						newCell.fVal = newCell.gVal + newCell.hVal
 					}
 				}
@@ -232,6 +242,8 @@ function findPath(openList, closedList, target, grid){
 }
 
 /*
+from "http://www.policyalmanac.org/games/aStarTutorial.htm"
+
 1) Add the starting square (or node) to the open list.
 
 2) Repeat the following:
