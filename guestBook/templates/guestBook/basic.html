@@ -63,6 +63,9 @@
 	{% load staticfiles %}
 	<script src="{% static 'guestBook/guestBookJS.js'%}" type="text/javascript"></script>
 </div>
+
+{% csrf_token %}
+
 {% endblock %}
 {% block description %}
 {% include "personal/includes/descriptionModal.html" with modalTitle="Guestbook" modalBody="<p>This project was inspired by guestbooks that can be found in hostels. Essentially the idea is that anyone can contribute to the picture and anonymously create a collaborative art project.</p><p>A couple styles of painting on a canvas element were created using Javascript events involving mouse position, mouse clicks, and HTML radio buttons. Similarly, the colour is chosen by three sliders which set the RGB colour value.</p><p>The page itself is composed of two canvas layers stacked on top of each other: An initially blank upper layer which the user is able to draw upon, and a bottom layer that the user cannot affect, which contains the drawings of the previous users.</p><p>When the user saves, the new drawing is combined with the old drawings, and a new blank upper layer is created. Data urls are generated for the new combined drawing, and the user's individual drawing which are passed back to the server and used to create png files which are saved in a folder on the server. These images can be accessed individually on the page in order to see each previous user's contributions. This also allows drawings to be removed by someone who has access to the server if need be.</p><p>This project currently has a limit to the number of drawings saved, and when this number is reached, old drawings are deleted to make way for new ones.</p>" %}

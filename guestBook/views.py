@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 import json
+import pdb
 import datetime
 import base64
 import os
@@ -24,16 +25,11 @@ def saveCanvasDelOldest(request):
     if request.method == "POST":
         path = os.getcwd() + "/guestBook/canvases/userDrawings/"
         fileList = os.listdir(path)
-        print(len(fileList))
-        while len(fileList) > 2:
-            for i in range(len(fileList)):
-                newDate = datetime.datetime.strptime(fileList[i].split(" - ")[0], "%Y-%m-%d %H:%M:%S.%f")
-                fileList[i] = (newDate, fileList[i])
-            fileList.sort(key=lambda x: x[0])
-            for i in range(len(fileList)):
-                fileList[i] = fileList[i][1]
-            os.remove(path + fileList[0])
-            fileList = fileList[1:len(fileList)]
+        if len(fileList) > 5:
+            fileList = orderByDate(fileList)
+            while len(fileList) > 5:
+                os.remove(path + fileList[0])
+                fileList = fileList[1:len(fileList)]
         f = open("guestBook/canvases/userDrawings/" + str(datetime.datetime.today()) + " - " + str(request.POST.get('userName', None)) + ".png", "wb")
         f.write(base64.b64decode(request.POST.get('userDrawing', None).split("base64,")[1]))
         f.close()
@@ -63,7 +59,8 @@ def createOriginal(request):
     if request.is_ajax():
         drawingList = list()
         path = os.getcwd() + "/guestBook/canvases/userDrawings/"
-        for fileName in os.listdir(path):
+        fileList = orderByDate(os.listdir(path))
+        for fileName in fileList:
             with open(path + fileName, "rb") as f:
                 drawingList.append("data:image/png;base64," + base64.b64encode(f.read()).decode("utf-8"))
                 f.close()
@@ -91,7 +88,6 @@ def loadDrawing(request):
     else:
         return HttpResponse("<h1>NO</h1>")
 
-
 def loadList(request):
     if request.is_ajax:
         path = os.getcwd() + "/guestBook/canvases/userDrawings/"
@@ -106,3 +102,12 @@ def loadList(request):
         return HttpResponse(json.dumps({"userNames": userNames}), content_type = "application/json")
     else:
         return HttpResponse("<h1>NO</h1>")
+
+def orderByDate(fileList):
+    for i in range(len(fileList)):
+        newDate = datetime.datetime.strptime(fileList[i].split(" - ")[0], "%Y-%m-%d %H:%M:%S.%f")
+        fileList[i] = (newDate, fileList[i])
+    fileList.sort(key=lambda x: x[0])
+    for i in range(len(fileList)):
+        fileList[i] = fileList[i][1]
+    return fileList

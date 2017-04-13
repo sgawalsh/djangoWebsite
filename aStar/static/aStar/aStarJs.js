@@ -18,8 +18,12 @@ function drawGrid(){//loads session storage 2d array "grid" and draws table of r
 }
 
 function saveGrid(){//takes user input and creates 2d array of cells and saves to sessionStorage
-	var rowNum = parseInt(document.getElementById("rowNum").value)
-	var colNum = parseInt(document.getElementById("colNum").value)
+	var htmlEl = document.getElementById("rowNum")
+	htmlEl.disabled = true
+	var rowNum = parseInt(htmlEl.value)
+	htmlEl = document.getElementById("colNum")
+	htmlEl.disabled = true
+	var colNum = parseInt(htmlEl.value)
 	var grid = []
 	
 	for (let i = 0; i < rowNum; i++){
@@ -135,7 +139,7 @@ function setWallsFindPath(){//sets walls, Hvalues on each cell, and calls recurs
 	}
 	else{
 		var successPath = JSON.parse(sessionStorage.getItem("successPath"))
-		for (let i = 0; i < successPath.length; i++){document.getElementById("x" + successPath[i][0] + ", y" + successPath[i][1] + "div").className = ""}
+		for (let i = 1; i < successPath.length - 1; i++){document.getElementById("x" + successPath[i][0] + ", y" + successPath[i][1] + "div").className = ""}
 	}
 	sessionStorage.setItem("grid", JSON.stringify(grid))
 }
@@ -154,8 +158,8 @@ function findSuccessPath(grid, endCoord){
 
 function drawSuccessPath(grid, pathArray){//changes class of divs in array to 'success', removes class name from old path
 	var successPath = JSON.parse(sessionStorage.getItem("successPath"))
-	for (let i = 0; i < successPath.length; i++){document.getElementById("x" + successPath[i][0] + ", y" + successPath[i][1] + "div").className = ""}
-	for (let i = 0; i < pathArray.length; i++){document.getElementById("x" + pathArray[i][0] + ", y" + pathArray[i][1] + "div").className = "success"}
+	for (let i = 1; i < successPath.length - 1; i++){document.getElementById("x" + successPath[i][0] + ", y" + successPath[i][1] + "div").className = ""}
+	for (let i = 1; i < pathArray.length - 1; i++){document.getElementById("x" + pathArray[i][0] + ", y" + pathArray[i][1] + "div").className = "success"}
 	sessionStorage.setItem("successPath", JSON.stringify(pathArray))
 }
 

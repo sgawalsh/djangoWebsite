@@ -9,5 +9,4 @@ urlpatterns = [
         url(r'^createCanvas', views.createOriginal, name = 'createCanvas'),
         url(r'^loadDrawing', views.loadDrawing, name = 'loadDrawing'),
         url(r'^loadList', views.loadList, name = 'loadList'),
-
 ]
