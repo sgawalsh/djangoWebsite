@@ -72,7 +72,7 @@ function displayArrayAsTable(inArray, rowNum, sortChoice) {// creates row, and t
     button.className = "btn btn-default"
     button.value = "Iterate Array"
     if (sortChoice == "QuickSort"){//Assigns quicksort function and 'division' tag to row
-        button.addEventListener("click", function() {qsiterateArray(row.id);}, false);
+        button.addEventListener("click", function() {qsiterateArray(row);}, false);
         button.style.cssFloat = "left"
         row.appendChild(button)
         createAssignSetNode(row, 'divisions', "[[0," + (array.length - 1) + "]]")
@@ -81,13 +81,13 @@ function displayArrayAsTable(inArray, rowNum, sortChoice) {// creates row, and t
         setTdClass(row, 0, inArray.length, "warning")
     }
     else if (sortChoice == "BogoSort"){//Assigns bogosort function
-        button.addEventListener("click", function() {bogoSort(row.id);}, false);
+        button.addEventListener("click", function() {bogoSort(row);}, false);
         button.style.cssFloat = "left"
         row.appendChild(button)
         addArrayToRow(row, array, 0)
     }
     else if (sortChoice === "BubbleSort"){//Assigns bubbleSort function and creates 'position' and 'passes' tag on row
-        button.addEventListener("click", function() {bubbleSort(row.id);}, false);
+        button.addEventListener("click", function() {bubbleSort(row);}, false);
         button.style.cssFloat = "left"
         row.appendChild(button)
         createAssignSetNode(row, 'position', 0)
@@ -98,7 +98,7 @@ function displayArrayAsTable(inArray, rowNum, sortChoice) {// creates row, and t
 
     }
     else if(sortChoice === "HeapSort"){//Add heapSort iteration button, speedSolve button, and set 'count' and 'start' variables to track solve progress
-        button.addEventListener("click", function () {heapSort(row.id);}, false);
+        button.addEventListener("click", function () {heapSort(row);}, false);
         button.style.cssFloat = "left"
         row.appendChild(button)
         createAssignSetNode(row, 'count', array.length - 1)
@@ -129,17 +129,15 @@ function addArrayToRow(row, inArray){
     for (let x = 0; x < inArray.length; x++) {//create table data and write array
         var td = document.createElement('td');
         td.innerHTML = inArray[x];
-        //td.Align = "left"
         row.appendChild(td);
     }
 }
 
 
-function qsiterateArray(rowId){
-    var row = document.getElementById(rowId)
+function qsiterateArray(row){
     var newArray = []
     var rowDivs = JSON.parse(row.getAttributeNode('divisions').value)
-    var rowArray = getArray(rowId)
+    var rowArray = getArray(row)
     if (rowDivs.length > 0 && row.getAttribute("issorted") == "false"){//if unsorted division exists, and array has not already been sorted, perform a sort step
         for (var i = rowDivs[0][0]; i <= rowDivs[0][1]; i++){
             newArray.push(rowArray[i])
@@ -173,8 +171,8 @@ function writeToPage(row, inArray, startPoint){// writes values in an array to a
 }
 
 
-function getArray(rowId){// loads values from table row and converts to an array of numbers
-    var rowArray = document.getElementById(rowId).getElementsByTagName("td")
+function getArray(row){// loads values from table row and converts to an array of numbers
+    var rowArray = row.getElementsByTagName("td")
     newArray = []
     for (let i = 0; i < rowArray.length; i++){
         newArray.push(+rowArray[i].innerHTML)
@@ -195,7 +193,8 @@ function checkSorted(row){// checks if values in a row have been sorted
             return false
             }
     }
-    document.getElementById('clickMe' + row.id[6]).disabled = true
+    row.childNodes[1].disabled = true
+    row.childNodes[2].disabled = true
     row.setAttribute("issorted", "true")
     row.className = "success"
     return true
@@ -213,19 +212,18 @@ function shuffle(inArray){//shuffles values in an array
 }
 
 
-function bogoSort(rowId){//loads array, shuffles, writes to page, and checks if row is sorted
-    if (document.getElementById(rowId).getAttribute("issorted") === "false"){
-        newArray = getArray(rowId)
+function bogoSort(row){//loads array, shuffles, writes to page, and checks if row is sorted
+    if (row.getAttribute("issorted") === "false"){
+        newArray = getArray(row)
         shuffle(newArray)
-        writeToPage(document.getElementById(rowId), newArray, 0)
-        checkSorted(document.getElementById(rowId))}
+        writeToPage(document.getElementById(row.id), newArray, 0)
+        checkSorted(document.getElementById(row.id))}
     else {alert("Array is already sorted.")}
 }
 
 
-function bubbleSort(rowId){//loads array and position from html and performs one step, then writes updated array to html
-    var row = document.getElementById(rowId)//load array, position, and passes data from html
-    var newArray = getArray(rowId)
+function bubbleSort(row){//loads array and position from html and performs one step, then writes updated array to html
+    var newArray = getArray(row)
     var position = parseInt(row.getAttributeNode('position').value)
     var passes = parseInt(row.getAttributeNode('passes').value)
     var rowArray = row.getElementsByTagName('td')
@@ -267,9 +265,8 @@ function setTdClass(row, startPoint, endPoint, newClass){//takes a row, and star
 }
 
 
-function heapSort(rowId){//creates initial heap, then removes root node, shrinking the heap until gone
-    var myArray = getArray(rowId)
-    var row = document.getElementById(rowId)
+function heapSort(row){//creates initial heap, then removes root node, shrinking the heap until gone
+    var myArray = getArray(row)
     var start = parseInt(row.getAttribute('start'))
     var count = parseInt(row.getAttribute('count'))
     if (start >= 0){// create initial heap, write 'start' attribute to row to keep track of position
@@ -365,7 +362,7 @@ function iterateAll(table){//clicks on iterate button on every row
 
 
 function speedBubble(row){//performs and times bubble sort, prints sorted array and gives time taken for the sort
-    var myArray = getArray(row.id)
+    var myArray = getArray(row)
     setTdClass(row, 0, myArray.length, "")
     var isSorted = true
     var holder
@@ -392,7 +389,7 @@ function speedBubble(row){//performs and times bubble sort, prints sorted array 
 
 
 function speedQuickCall(row){// reads array, calls quicksort, and records time taken
-    var inArray = getArray(row.id)
+    var inArray = getArray(row)
     setTdClass(row, 0, inArray.length, "")
     var start = performance.now()
     writeToPage(row, speedQuickSort(inArray), 0)
@@ -423,7 +420,7 @@ function speedQuickSort(inArray){// performs quicksort and returns sorted array
 
 
 function speedHeap(row){// performs heapsort and records time taken then writes array and outputs time
-    var myArray = getArray(row.id)
+    var myArray = getArray(row)
     setTdClass(row, 0, myArray.length, '')
     var start = parseInt(row.getAttribute('start'))
     var count = parseInt(row.getAttribute('count'))
@@ -467,7 +464,7 @@ function mergeDivs(row){
     var divs = divList.pop()
     createAssignSetNode(row, "divList", JSON.stringify(divList))
 
-    var myArray = getArray(row.id)
+    var myArray = getArray(row)
     var div1 = myArray.slice(divs[0][0], divs[0][1])
     var div2 = myArray.slice(divs[1][0], divs[1][1])
 
@@ -489,7 +486,7 @@ function mergeDivs(row){
 
 function speedMerge(row){//calls speed Merge fn and tracks time taken to complete, writes result to page and displays time value
     var start = performance.now()
-    var myArray = speedMergeSort(getArray(row.id))
+    var myArray = speedMergeSort(getArray(row))
     var end = performance.now()
     writeToPage(row, myArray, 0)
     endSpeedSort(row)
@@ -544,8 +541,8 @@ function makeSpeedButton(row, fnName){// creates a button on the row which is as
 
 
 function endSpeedSort(row){// disables iterate and speed sort buttons and sets row class to 'success'
-    document.getElementById('clickMe' + row.id[6]).disabled = true
-    document.getElementById('speedButton' + row.id[6]).disabled = true
+    row.childNodes[1].disabled = true
+    row.childNodes[2].disabled = true
     row.setAttribute("issorted", "true")
     row.className = "success"
 }
