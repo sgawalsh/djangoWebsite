@@ -43,27 +43,24 @@ def index(request):
                 subPostsList = subSearch.get_top_from_all(limit = 25)
                 averageScore = myEntry.allTimeMean
                 sigma = myEntry.allTimeSigma
-				
             
 
             for post in subPostsList:
                 thisPost = redditPost(title = post.title, inSub = sub, score = post.score, author = post.author, url = post.url, commentsUrl = post.permalink, creationDate = datetime.date.fromtimestamp(post.created))
-				#outstandingness = post.score / averageScore, percentile = (stats.norm.cdf((post.score - averageScore) / sigma) * 100),                #passList.append(redditPost(title = post.title, inSub = sub, score = post.score, author = post.author, url = post.url, outstandingness = post.score / averageScore, percentile = (stats.norm.cdf((post.score - averageScore) / sigma) * 100), commentsUrl = post.permalink, creationDate = datetime.date.fromtimestamp(post.created)))
+                #outstandingness = post.score / averageScore, percentile = (stats.norm.cdf((post.score - averageScore) / sigma) * 100),                #passList.append(redditPost(title = post.title, inSub = sub, score = post.score, author = post.author, url = post.url, outstandingness = post.score / averageScore, percentile = (stats.norm.cdf((post.score - averageScore) / sigma) * 100), commentsUrl = post.permalink, creationDate = datetime.date.fromtimestamp(post.created)))
                 if averageScore == 0:
-                    postOutstandingness = None
+                    postOutstandingness = 0
                 else: postOutstandingness = post.score / averageScore
 
                 if sigma == 0:
-                    postPercentile = None
+                    postPercentile = 50
                 else: postPercentile = (stats.norm.cdf((post.score - averageScore) / sigma) * 100)
 
                 thisPost.outstandingness = postOutstandingness
                 thisPost.percentile = postPercentile
                 passList.append(thisPost)
-					
-				
-
-
+                
+        pdb.set_trace()
         passList.sort(key = lambda x: x.percentile, reverse = True)
 
         return render(request, "redditBot/basic.html", {"posts": passList})

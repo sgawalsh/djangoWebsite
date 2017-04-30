@@ -1,3 +1,7 @@
+window.onload = function() {
+    document.getElementById('candidatesList').value = '[]'
+}
+
 function addCandidate(canName){
     if (canName == ""){
         alert("Please choose a name for the candidate")
@@ -188,7 +192,6 @@ function getCookie(name) {
         var cookies = document.cookie.split(';');
         for (var i = 0; i < cookies.length; i++) {
             var cookie = jQuery.trim(cookies[i]);
-            // Does this cookie string begin with the name we want?
             if (cookie.substring(0, name.length + 1) === (name + '=')) {
                 cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
                 break;

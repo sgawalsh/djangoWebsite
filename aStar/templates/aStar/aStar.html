@@ -2,9 +2,9 @@
 
 {% block content %}
 <label for="rowNum">Rows</label>
-<input type="number" class="btn btn-default" id ='rowNum' value=5 min="1" max="20">
+<input type="number" class="btn btn-default" id ='rowNum' value=6 min="1" max="20">
 <label for="colNum">Columns</label>
-<input type="number" class="btn btn-default" id ='colNum' value=5 min="1" max="20">
+<input type="number" class="btn btn-default" id ='colNum' value=6 min="1" max="20">
 <input id="stepButton" class="btn btn-default" type="button" value="Create Grid" onclick="createGrid()"/>
 <br><br>
 
@@ -12,7 +12,6 @@
 
 {% load staticfiles %}
 <script type="text/javascript" src="{% static 'aStar/aStarJs.js' %}"></script>
-<!--<script type="text/javascript" src="{% static 'personal/js/jquery-3.1.0.js' %}"></script>-->
 {% endblock %}
 
 {% block description %}
