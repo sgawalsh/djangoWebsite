@@ -306,35 +306,6 @@ function tieBreak(nodeA, nodeB){//compare values, return true if a > b, and fals
 	}
 }
 
-function miniMax(node, alpha, beta, depth){//decision-making algorithm in which branches of moves are examined in order to find best available move from a root node
-	if (node.childList.length > 0){
-		if (depth % 2 == 0){node.value = -2}//initialize value on max node
-		else if (depth % 2 == 1){node.value = 2}// initialize value on min node
-		for (let i = 0; i < node.childList.length; i++){
-			var retValue = miniMax(node.childList[i], Number(alpha), Number(beta), depth + 1)//calls self recursively on child nodes
-			if (depth % 2 == 0){
-				if (retValue > node.value){node.value = retValue}
-				if (node.value > alpha) {alpha = node.value}
-			}
-			else{
-				if (retValue < node.value) {node.value = retValue}
-				if (node.value < beta){beta = node.value}
-			}
-			if (alpha >= beta){return node.value}//pruning, don't check remaining sibling branches
-		}
-	}
-	return node.value
-}
-
-function miniMax4TicTacs(node){
-	if (node.childList.length > 0){
-		for (let i = 0; i < node.childList.length; i++){
-			node.value += miniMax4TicTacs(node.childList[i])
-		}
-	}
-	return node.value
-}
-
 function connect4MiniMax(node, alpha, beta, depth, maxDepth){
 	if (depth < maxDepth && (node.colChoice == null || !(node.boardClass.checkSolvedAt(node.colChoice, node.rowChoice)))){
 		node.addNextMoves()
