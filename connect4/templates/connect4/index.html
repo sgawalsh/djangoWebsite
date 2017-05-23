@@ -1,0 +1,31 @@
+{% extends "personal/header.html" %}
+
+{% block content %}
+
+	<button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off" id ="userFirst">User Moves First</button>
+	<label for="difficultySetting">Difficulty Setting</label><input type="number" class="btn btn-default" id ='difficultySetting' value=4 min="1" max="7">
+	<br><br>
+
+	<table class="table table-bordered" align="center">
+		<tbody id = "boardBody">
+			<tr id="columnChoices" class="success"><th><center><input type ="radio" name = "playerChoice"></center></th><th><center><input type ="radio" name = "playerChoice"></center></th><th><center><input type ="radio" name = "playerChoice"></center></th><th><center><input type ="radio" name = "playerChoice"></center></th><th><center><input type ="radio" name = "playerChoice"></center></th><th><center><input type ="radio" name = "playerChoice"></center></th><th><center><input type ="radio" name = "playerChoice"></center></th></tr>
+			<tr><td><center><input type ="radio" name = "playerChoice" disabled></center></td><td><center><input type ="radio" name = "playerChoice" disabled></center></td><td><center><input type ="radio" name = "playerChoice" disabled></center></td><td><center><input type ="radio" name = "playerChoice" disabled></center></td><td><center><input type ="radio" name = "playerChoice" disabled></center></td><td><center><input type ="radio" name = "playerChoice" disabled></center></td><td><center><input type ="radio" name = "playerChoice" disabled></center></td></tr>
+			<tr><td><center><input type ="radio" name = "playerChoice" disabled></center></td><td><center><input type ="radio" name = "playerChoice" disabled></center></td><td><center><input type ="radio" name = "playerChoice" disabled></center></td><td><center><input type ="radio" name = "playerChoice" disabled></center></td><td><center><input type ="radio" name = "playerChoice" disabled></center></td><td><center><input type ="radio" name = "playerChoice" disabled></center></td><td><center><input type ="radio" name = "playerChoice" disabled></center></td></tr>
+			<tr><td><center><input type ="radio" name = "playerChoice" disabled></center></td><td><center><input type ="radio" name = "playerChoice" disabled></center></td><td><center><input type ="radio" name = "playerChoice" disabled></center></td><td><center><input type ="radio" name = "playerChoice" disabled></center></td><td><center><input type ="radio" name = "playerChoice" disabled></center></td><td><center><input type ="radio" name = "playerChoice" disabled></center></td><td><center><input type ="radio" name = "playerChoice" disabled></center></td></tr>
+			<tr><td><center><input type ="radio" name = "playerChoice" disabled></center></td><td><center><input type ="radio" name = "playerChoice" disabled></center></td><td><center><input type ="radio" name = "playerChoice" disabled></center></td><td><center><input type ="radio" name = "playerChoice" disabled></center></td><td><center><input type ="radio" name = "playerChoice" disabled></center></td><td><center><input type ="radio" name = "playerChoice" disabled></center></td><td><center><input type ="radio" name = "playerChoice" disabled></center></td></tr>
+			<tr><td><center><input type ="radio" name = "playerChoice" disabled></center></td><td><center><input type ="radio" name = "playerChoice" disabled></center></td><td><center><input type ="radio" name = "playerChoice" disabled></center></td><td><center><input type ="radio" name = "playerChoice" disabled></center></td><td><center><input type ="radio" name = "playerChoice" disabled></center></td><td><center><input type ="radio" name = "playerChoice" disabled></center></td><td><center><input type ="radio" name = "playerChoice" disabled></center></td></tr>
+			<tr><td><center><input type ="radio" name = "playerChoice" disabled></center></td><td><center><input type ="radio" name = "playerChoice" disabled></center></td><td><center><input type ="radio" name = "playerChoice" disabled></center></td><td><center><input type ="radio" name = "playerChoice" disabled></center></td><td><center><input type ="radio" name = "playerChoice" disabled></center></td><td><center><input type ="radio" name = "playerChoice" disabled></center></td><td><center><input type ="radio" name = "playerChoice" disabled></center></td></tr>
+		</tbody>
+	</table>
+	<input id="submitMove" class="btn btn-default" type="button" value="Submit Move" onclick="dropPiece()"/>
+	<input type="button" id ="resetButton" value ="New Game?" onclick ="resetBoard()" class ="btn btn-default">
+
+	
+	{% csrf_token %}
+{% load staticfiles %}
+<script type="text/javascript" src="{% static 'connect4/connect4Js.js' %}"></script>
+{% endblock %}
+
+{% block description %}
+{% include "personal/includes/descriptionModal.html" with modalTitle="Connect 4 A.I." modalBody="<p>The goal of this project was to apply the <a href='https://en.wikipedia.org/wiki/Minimax'>minimax algorithm</a> to the game of connect 4 in order to create an AI that a user can play against.</p><p>First, the board is read by the computer and converted into a 2d array made up of a class giving info on the state of the board. In order to choose a move, the program generates a tree which has the current board as its root. Each subsequent level of the tree contains possible moves that could be made from the positions on the level above. The algorithm uses <a href='https://en.wikipedia.org/wiki/Alpha%E2%80%93beta_pruning'>Alpha-Beta pruning</a> in order to eliminate branches that can no longer contribute to the final result, which greatly reduces the amount of work to be done by the program.</p><p>It would take too long to generate a tree with all possible permutations of the game, so instead a maximum tree depth is set by the user in the difficulty setting box. This value represents how many moves ahead the algorithm will consider. A higher setting allows the program to make smarter moves, but requires more time to run. On the final level of the tree, each board is given a score according to a heuristic which attempts to score each board according to how favourable it is from the position of the computer player. It's these scores that are used to run the minimax algorithm which determines the move made by the program.</p>"%}
+{% endblock %}
