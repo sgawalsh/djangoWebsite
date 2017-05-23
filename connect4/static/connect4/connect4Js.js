@@ -1,20 +1,9 @@
-function initializePage(){//runs on page loading, computer reads initial table and makes first move
-	var difficulty = parseInt($("#difficultySetting").val())
-	if ($("#userFirst").is(".active")){
-		return false
-	}
-	var difficulty = parseInt($("#difficultySetting").val())
-	if (difficulty < 1 || difficulty > 7 || difficulty % 1 != 0){
-		alert("Please choose a difficulty between 1 and 7")
-		return false
-	}
+function compMove(difficulty){//computer reads table and makes move
 	var rootNode = new treeNode(0, readTable())
 	connect4MiniMax(rootNode, -200, 200, 0, difficulty)
 	var chosenChild = rootNode.chooseChild()
 	writeTable(chosenChild.boardClass.board)
 	sessionStorage.setItem("moveList", JSON.stringify({userFirst: $("#userFirst").is(".active"), moveList: [chosenChild.colChoice], difficulty: difficulty}))
-	rootNode.childList = []
-	
 }
 
 class treeNode{//nodeClass for trees, each node contains a board state and list of potential next mvoes
@@ -27,7 +16,8 @@ class treeNode{//nodeClass for trees, each node contains a board state and list 
 		this.depth = depth
 		this.boardClass = board
 		this.colChoice = colChoice
-		this.rowChoice = this.getRowNum()
+		if (colChoice != null){this.rowChoice = this.getRowNum()}
+		else{this.rowChoice = null}
 	}
 	
 	addNextMoves(){//checks board for legal moves and creates child for each move found
@@ -47,7 +37,6 @@ class treeNode{//nodeClass for trees, each node contains a board state and list 
 				break
 			}
 		}
-		alert("No corresponding move found?!? Derp.")
 	}
 	
 	chooseChild(){//finds child with max value
@@ -81,10 +70,9 @@ class treeNode{//nodeClass for trees, each node contains a board state and list 
 	}
 	
 	getRowNum(){
-		for (let i = 4; i >=0; i--){
-			if (!(this.boardClass.board[this.colChoice, i].isPopulated)){return i + 1}
+		for (let i = 0; i < 6; i++){
+			if (this.boardClass.board[i][this.colChoice].isPopulated){return i}
 		}
-		return 0
 	}
 	
 	sortChildren(){
@@ -182,12 +170,7 @@ function dropPiece(){//new node is created for current gamestate, loss or tie co
 	//read first row to identify column
 	var colId = 0
 	var colFound = false
-	var difficulty = parseInt($("#difficultySetting").val())
-	if (difficulty < 1 || difficulty > 7 || difficulty % 1 != 0){
-		alert("Please choose a difficulty between 1 and 7")
-		return false
-	}
-	$("#boardBody").children().first().find("input").each(function(){
+	$(".topRow").each(function(){
 		if ($(this).is(":checked")){//is column full? if not find lowest available space and set input to checked and call submitMove(rootNode)
 			var rootNode = new treeNode(0, readTable())
 			if (rootNode.boardClass.board[0][colId].isPopulated){
@@ -199,6 +182,8 @@ function dropPiece(){//new node is created for current gamestate, loss or tie co
 					else{
 						rootNode.boardClass.board[i][colId].isPopulated = true
 						rootNode.boardClass.board[i][colId].isRed = false
+						rootNode.colChoice = colId
+						rootNode.rowChoice = i
 						colFound = true
 						var moveList = JSON.parse(sessionStorage.getItem("moveList"))
 						moveList["moveList"].push(colId)
@@ -216,7 +201,7 @@ function dropPiece(){//new node is created for current gamestate, loss or tie co
 }
 
 function submitMove(rootNode){//loss or tie conditions are checked, then move is chosen, win or tie conditions are then checked as board is written to html
-	if (rootNode.boardClass.checkSolved()){
+	if (rootNode.boardClass.checkSolvedAt(rootNode.colChoice, rootNode.rowChoice)){
 		writeTable(rootNode.boardClass.board)
 		alert("You win. GJ.")
 		recordLoss()
@@ -235,7 +220,7 @@ function submitMove(rootNode){//loss or tie conditions are checked, then move is
 	var moveList = JSON.parse(sessionStorage.getItem("moveList"))
 	moveList["moveList"].push(chosenMove.colChoice)
 	sessionStorage.setItem("moveList", JSON.stringify(moveList))
-	if (chosenMove.boardClass.checkSolved()){
+	if (chosenMove.boardClass.checkSolvedAt(chosenMove.colChoice, chosenMove.rowChoice)){
 		alert("I win.")
 		endGame()
 		return
@@ -250,27 +235,32 @@ function submitMove(rootNode){//loss or tie conditions are checked, then move is
 function writeHeader(newRow, board){
 	var myHtml = ""
 	for (let i = 0; i < 7; i++){
-		if (board[0][i].isPopulated){myHtml += '<th class = "active"><center><input type ="radio" name = "playerChoice" disabled></center></th>'}
-		else {myHtml += '<th class = "success"><center><input type ="radio" name = "playerChoice"></center></th>'}
+		if (board[0][i].isPopulated){myHtml += '<th class = "active"><center><input type ="radio" class = "topRow" name = "playerChoice" disabled></center></th>'}
+		else {myHtml += '<th class = "success"><center><input type ="radio" class = "topRow" name = "playerChoice"></center></th>'}
 	}
 	newRow.innerHTML = myHtml
 }
 
 function endGame(){//inputs on old board and "submit move" button are disabled
 	$(document).ready()
-	var tds = $("#boardBody").find("td")
-	$("#boardBody").find("td").each(function (){
-		if ($(this).children().first().prop("tagName") == "INPUT"){
-			$(this).children().first().prop("disabled", true)
-		}
+	$(".topRow").each(function (){
+		$(this).prop("disabled", true)
 	})
 	$("#submitMove").prop("disabled", true)
 }
 
 function resetBoard(){//new board is created and written, "submit move" button is reactivated
 	writeTable((new boardClass()).board)
-	$("#submitMove").prop("disabled", false)
-	$(document).ready(function(){initializePage()})
+	$(".topRow").each(function(){
+		$(this).prop("disabled", true)
+	})
+	$("#difficultySetting").prop("disabled", false)
+	$("#userFirst").prop("disabled", false)
+	$("#submitMove").prop("disabled", true)
+	var resetButton = $("#resetButton")
+	$(resetButton).prop("value", "Begin Game")
+	$(resetButton).off("click", resetBoard)
+	$(resetButton).on("click", beginGame)
 }
 
 function recordLoss(){
@@ -419,7 +409,7 @@ class boardClass{//class containing a board and several methods for checking if 
 		for (let i = 0; i < 4; i++){
 			if ((x - i) <= 3 && (x - i) >= 0 && (y - i) <= 2 && (y - i) >= 0){
 				var isSetRed = null
-				var isSolved = null
+				var isSolved = true
 				for (let j = 0; j < 4; j++){
 					if (!(this.board[y - i + j][x - i + j].isPopulated)){
 						isSolved = false
@@ -445,7 +435,7 @@ class boardClass{//class containing a board and several methods for checking if 
 		for (let i = 0; i < 4; i++){
 			if ((x - i) <= 3 && (x - i) >= 0 && (y + i) <= 5 && (y + i) >= 3){
 				var isSetRed = null
-				var isSolved = null
+				var isSolved = true
 				for (let j = 0; j < 4; j++){
 					if (!(this.board[y + i - j][x - i + j].isPopulated)){
 						isSolved = false
@@ -463,82 +453,6 @@ class boardClass{//class containing a board and several methods for checking if 
 			}
 		}
 		return false
-	}
-	
-	checkSolved(){
-		if (this.checkSolvedRow(true) || this.checkSolvedCol(true) || this.checkSolvedDiaDesc(true) || this.checkSolvedDiaAsc(true)) {return true}
-		else if (this.checkSolvedRow(false) || this.checkSolvedCol(false) || this.checkSolvedDiaDesc(false) || this.checkSolvedDiaAsc(false)) {return true}
-		else {return false}
-	}
-	
-	checkSolvedCol(isRed){
-		var isSolved = null
-		for(let i = 0; i < 3; i++){
-			for(let j = 0; j < 7; j++){
-				isSolved = true
-				for (let k = 0; k < 4; k++){
-					if (!(this.board[i + k][j].isPopulated) || this.board[i + k][j].isRed != isRed){
-						isSolved = false
-						break
-					}
-				}
-				if (!(isSolved)){continue}
-				return true
-			}
-		}
-		return false
-	}
-	
-	checkSolvedRow(isRed){
-		var isSolved = null
-		for (let i = 0; i < 6; i++){
-			for (let j = 0; j < 4; j++){
-				isSolved = true
-				for (let k = 0; k < 4; k++){
-					if (!(this.board[i][j + k].isPopulated) || this.board[i][j + k].isRed != isRed){
-						isSolved = false
-						break
-					}
-				}
-				if (!(isSolved)){continue}
-				return true
-			}
-		}
-		return false
-	}
-	
-	checkSolvedDiaDesc(isRed){
-		var isSolved = null
-		for (let i = 0; i < 3; i++){
-			for (let j = 0; j < 4; j++){
-				isSolved = true
-				for (let k = 0; k < 4; k++){
-					if (!(this.board[i + k][j + k].isPopulated) || this.board[i + k][j + k].isRed != isRed){
-						isSolved = false
-						break
-					}
-				}
-				if (!(isSolved)){continue}
-				return true
-			}
-		}
-	}
-	
-	checkSolvedDiaAsc(isRed){
-		var isSolved = null
-		for (let i = 3; i < 6; i++){
-			for (let j = 0; j < 4; j++){
-				isSolved = true
-				for (let k = 0; k < 4; k++){
-					if (!(this.board[i - k][j + k].isPopulated) || this.board[i - k][j + k].isRed != isRed){
-						isSolved = false
-						break
-					}
-				}
-				if (!(isSolved)){continue}
-				return true
-			}
-		}
 	}
 	
 	boardFull(){
@@ -803,4 +717,27 @@ function csrfSafeMethod(method) {
     return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
 }
 
-$(document).ready(function(){initializePage()})
+function beginGame(){
+	var difficulty = parseInt($("#difficultySetting").val())
+	if (difficulty < 1 || difficulty > 7 || difficulty % 1 != 0){
+		alert("Please choose a difficulty between 1 and 7.")
+		return false
+	}
+	else{
+		$("#difficultySetting").prop("disabled", true)
+		$(".topRow").each(function(){
+			$(this).prop("disabled", false)
+		})
+		$("#submitMove").prop("disabled", false)
+		$("#userFirst").prop("disabled", true)
+		var resetButton = $("#resetButton")
+		$(resetButton).off("click", beginGame)
+		$(resetButton).on("click", resetBoard)
+		$(resetButton).prop("value", "New Game?")
+		if (!($("#userFirst").is(".active"))){
+			compMove(difficulty)
+		}
+	}
+}
+
+$("#resetButton").on("click", beginGame)
