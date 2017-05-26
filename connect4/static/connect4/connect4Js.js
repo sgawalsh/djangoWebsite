@@ -28,17 +28,6 @@ class treeNode{//nodeClass for trees, each node contains a board state and list 
 		}
 	}
 	
-	readMove(){//Check children and find child matching input board. Move to this board then, simulate new tree, and chooseMove()
-		var newBoard = readTable()
-		for (let i = 0; i < childList.length; i++){
-			if (checkBoardsSame(newBoard, this.childList[i].board)){
-				this.board = newboard
-				this.chooseMove()
-				break
-			}
-		}
-	}
-	
 	chooseChild(){//finds child with max value
 		var maxVal = -2000
 		var maxChild = null
@@ -74,28 +63,41 @@ class treeNode{//nodeClass for trees, each node contains a board state and list 
 			if (this.boardClass.board[i][this.colChoice].isPopulated){return i}
 		}
 	}
-	
-	sortChildren(){
-		this.childList =  sortChildrenRecursive(this.childList)
+}
+
+function logTree(toLook){//prints tree to console, called with logTree([rootNode]])
+	while (typeof(toLook) != "undefined" && toLook.length > 0){
+		console.log(getString(toLook, 0))//get string from value in toLook
+		toLook = getChildLayer(toLook)//push child elements to toLook
 	}
-	
-	sortChildrenRecursive(inArray){
-		if (inArray.length > 1){
-			var pivot = inArray.pop()
-			var less = []
-			var more = []
-			var pivArray = []
-			for (let i = 0; i < inArray.length; i++){
-				if (inArray[i].value < pivot.value){less.push(inArray[i])}
-				else if (inArray [i].value > pivot.value){more.push(inArray[i])}
-				else if (inArray[i].value === pivot.value){pivArray.push(inArray[i])}
-			}
-			less = sortChildrenRecursive(less)
-			more = sortChildrenRecursive(more)
-			pivArray.push(pivot)
-			return less.concat(pivArray).concat(more)
-			}
-		else {return inArray}
+}
+
+function getString(toLook, counter){
+	if(Object.prototype.toString.call(toLook) === '[object Array]'){//if object is array, return elements seperated by commas
+		var retString = counter.toString() + ": ["
+		for (let i = 0; i < toLook.length; i++){retString += getString(toLook[i], i) + ", "}
+		retString = retString.slice(0, retString.length - 2)
+		retString += "]"
+		return retString
+	}
+	else if (typeof(toLook) != "undefined"){//return number as string
+		return toLook.value.toString()
+	}
+}
+
+function getChildLayer(toLook){//given a level of a tree, returns next level
+	if(Object.prototype.toString.call(toLook) === '[object Array]'){//if object is array, perform fn on chilren and return array of results
+		var retArray = []
+		var child
+		for (let i = 0; i < toLook.length; i++){
+			child = getChildLayer(toLook[i])
+			if (Object.prototype.toString.call(child) === '[object Array]' || typeof(child) != "undefined" && child.childList.length > 0){retArray.push(child)}
+		}
+		if (retArray.length > 0){return retArray}
+		else return
+	}
+	else if (typeof(toLook) != "undefined" && toLook.childList.length > 0){//if object is node, return childList
+		return toLook.childList
 	}
 }
 
@@ -215,6 +217,7 @@ function submitMove(rootNode){//loss or tie conditions are checked, then move is
 		return
 	}
 	connect4MiniMax(rootNode, -200, 200, 0, parseInt($("#difficultySetting").val()))
+	logTree([rootNode])
 	var chosenMove = rootNode.chooseChild()
 	writeTable(chosenMove.boardClass.board)
 	var moveList = JSON.parse(sessionStorage.getItem("moveList"))
@@ -737,6 +740,7 @@ function beginGame(){
 		if (!($("#userFirst").is(".active"))){
 			compMove(difficulty)
 		}
+		else {sessionStorage.setItem("moveList", JSON.stringify({userFirst: $("#userFirst").is(".active"), moveList: [], difficulty: difficulty}))}
 	}
 }
 
