@@ -10,7 +10,7 @@ def takeTurn(request):
 	if request.method == "POST":
 		isSolved = False
 		isDraw = False
-		if request.POST.get("boardState"):
+		if request.POST.get("boardState") and request.POST.get("resetGameFlag", False) != 'true':
 			boardState = json.loads(request.POST.get("boardState"))
 			legalMoves = json.loads(request.POST.get("legalMoves"))
 			playerTurn = request.POST.get("playerTurn")
@@ -33,7 +33,6 @@ def takeTurn(request):
 				board = engine.board(toBoardCells(boardState), legalMoves)
 				isSolved = board.checkWin(5 - i, choice, playerTurn == '1')
 				if isSolved:
-					pdb.set_trace()
 					if playerTurn == '1':
 						player1Score += 1
 					else:
@@ -43,14 +42,15 @@ def takeTurn(request):
 				
 				playerTurn = '1' if playerTurn == '2' else '2'
 								
-				return render(request, "c4nn/takeTurn.html", {"legalMoves": legalMoves, "playerTurn": playerTurn, "player1": request.POST.get("player1"), "player2": request.POST.get("player2"), "isPlayerTurn": request.POST.get("player" + playerTurn) == "Human Player", "boardState" : toBoardArray(board.board), "player1MinimaxDepth": request.POST.get("player1MinimaxDepth"), "player2MinimaxDepth": request.POST.get("player2MinimaxDepth"), "player1RecursionCount": request.POST.get("player1RecursionCount"), "player2RecursionCount": request.POST.get("player2RecursionCount"), "isSolved": isSolved, "isDraw": isDraw, "player1Score": player1Score, "player2Score": player2Score})
+				return render(request, "c4nn/takeTurn.html", {"legalMoves": legalMoves, "playerTurn": playerTurn, "player1": request.POST.get("player1"), "player2": request.POST.get("player2"), "isPlayerTurn": request.POST.get("player" + playerTurn) == "Human Player", "boardState" : toBoardArray(board.board), "player1MinimaxDepth": request.POST.get("player1MinimaxDepth"), "player2MinimaxDepth": request.POST.get("player2MinimaxDepth"), "player1RecursionCount": request.POST.get("player1RecursionCount"), "player2RecursionCount": request.POST.get("player2RecursionCount"), "isSolved": isSolved, "isDraw": isDraw, "player1Score": player1Score, "player2Score": player2Score, "autoplay": request.POST.get("autoplay")})
 				
 			board = engine.board(toBoardCells(boardState), legalMoves)
 			
 			if currPlayer == "Minimax Algorithm":
 				tree = minimax.miniTree(board, playerTurn == '1', int(request.POST.get("player" + str(playerTurn) + "MinimaxDepth")))
-				#print(tree.__str__())
-				board = board.serveNextState(tree.getMove(), playerTurn == '1')[0]
+				#print(tree.__str__(3))
+				board, row, col = board.serveNextState(tree.getMove(), playerTurn == '1')
+				isSolved = board.checkWin(row, col, playerTurn == '1')
 			elif currPlayer == "Default Neural Net" or currPlayer == "Upload Neural Net":
 				if currPlayer == "Default Neural Net":
 					myTree = mc.monteTree(board, playerTurn == '1', tf.keras.models.load_model(os.path.dirname(os.path.realpath(__file__)) + "\\models\\the_policy_champ"), tf.keras.models.load_model(os.path.dirname(os.path.realpath(__file__)) + "\\models\\the_value_champ"))
@@ -73,16 +73,17 @@ def takeTurn(request):
 				myTree.makeMove(True)# set root to next move
 				board = myTree.root.board
 				isSolved = board.checkWin(myTree.root.rowNum, myTree.root.colNum, not myTree.root.isRedTurn)
-				if isSolved:
-					if playerTurn == '1':
-						player1Score += 1
-					else:
-						player2Score += 1
-				else:
-					isDraw = board.checkDraw()
-					
+				
 			else:
 				return HttpResponse("stop that")
+			
+			if isSolved:
+				if playerTurn == '1':
+					player1Score += 1
+				else:
+					player2Score += 1
+			else:
+				isDraw = board.checkDraw()
 			
 			playerTurn = '1' if playerTurn == '2' else '2'
 		else:
@@ -92,6 +93,12 @@ def takeTurn(request):
 					os.remove(os.path.join(dir, item))
 			board = engine.board()
 			playerTurn = '1'
+			if request.POST.get("resetGameFlag", False) == 'true':
+				player1Score = request.POST.get("player1Score")
+				player2Score = request.POST.get("player2Score")
+			else:
+				player1Score = 0
+				player2Score = 0
 			if request.POST.get("player1") == "Upload Neural Net" or request.POST.get("player2") == "Upload Neural Net":
 				for f in request.FILES:
 					#verify file is valid NN, save locally, id by session
@@ -112,8 +119,7 @@ def takeTurn(request):
 						return render(request, "c4nn/index.html", {"errorMessage": "There was a problem with your uploaded files. Please check the files and try again."})
 					except Exception as error:
 						return render(request, "c4nn/index.html", {"errorMessage": "There was a problem with your uploaded files. Please check the files and try again.\n" + str(error)})
-		board.printBoard()
-		return render(request, "c4nn/takeTurn.html", {"legalMoves": board.legalMoves, "playerTurn": playerTurn, "player1": request.POST.get("player1"), "player2": request.POST.get("player2"), "isPlayerTurn": request.POST.get("player" + playerTurn) == "Human Player", "boardState": toBoardArray(board.board), "player1MinimaxDepth": request.POST.get("player1MinimaxDepth"), "player2MinimaxDepth": request.POST.get("player2MinimaxDepth"), "player1RecursionCount": request.POST.get("player1RecursionCount"), "player2RecursionCount": request.POST.get("player2RecursionCount"), "isSolved": isSolved, "isDraw": isDraw, "player1Score": 0, "player2Score": 0})
+		return render(request, "c4nn/takeTurn.html", {"legalMoves": board.legalMoves, "playerTurn": playerTurn, "player1": request.POST.get("player1"), "player2": request.POST.get("player2"), "isPlayerTurn": request.POST.get("player" + playerTurn) == "Human Player", "boardState": toBoardArray(board.board), "player1MinimaxDepth": request.POST.get("player1MinimaxDepth"), "player2MinimaxDepth": request.POST.get("player2MinimaxDepth"), "player1RecursionCount": request.POST.get("player1RecursionCount"), "player2RecursionCount": request.POST.get("player2RecursionCount"), "isSolved": isSolved, "isDraw": isDraw, "player1Score": player1Score, "player2Score": player2Score, "autoplay": request.POST.get('autoplay', False) == ''})
 	else:
 		return render(request, "c4nn/index.html")
 		
