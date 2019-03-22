@@ -1,7 +1,6 @@
 from django.shortcuts import render, HttpResponse
 from spareChange.models import personChange
-import json
-import pdb
+import json, pdb
 
 def index(request):
     if request.method == "POST":

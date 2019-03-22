@@ -1,0 +1,78 @@
+{% extends "personal/header.html" %}
+
+{% block content %}
+
+	<!--<button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off" id ="userFirst">User Moves First</button>
+	<label for="difficultySetting">Difficulty Setting</label><input type="number" class="btn btn-default" id ='difficultySetting' value=5 min="1" max="7">-->
+	<br><br>
+	{% if isSolved or isDraw %}
+		<div class="row">
+			<div class="col-md-12">
+				<p>{% if isSolved%}They won!{% else %}Draw!{% endif %}
+				</p>
+			</div>
+		</div>
+	{% endif %}
+	<form onsubmit = "getTable();" action="" method = "post" enctype="multipart/form-data">
+		{% csrf_token %}
+		<div class="row">
+			<div class="col-md-12">
+				<table class="table" align="center">
+					<tr>
+						<td {% if playerTurn == '1' %} class='success' {% endif %}>
+							<label for="player1par">Player 1: </label><p name="player1par">{{player1}}</p>
+						</td>
+						<td>
+							<label for="player1Score">Score: </label><input type="number" id = "player1Score" name="player1Score" value="{{player1Score}}">
+						</td>
+						<td {% if playerTurn == '2' %} class='success' {% endif %}>
+							<label for="player2par">Player 2: </label><p name="player2par">{{player2}}</p>
+						</td>
+						<td>
+							<label for="player2Score">Score: </label><input type="number" id = "player2Score" name="player2Score" value="{{player2Score}}">
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<table class="table table-bordered" align="center">
+					<tbody id = "boardBody">
+						<tr id="columnChoices" class="success"><th><center><input type ="radio" class="topRow" name = "playerChoice" value='0' required{% if isPlayerTurn == False %} disabled {% endif %}></center></th><th><center><input type ="radio" class="topRow" name = "playerChoice" value='1'{% if isPlayerTurn == False or isSolved or isDraw %} disabled {% endif %}></center></th><th><center><input type ="radio" class="topRow" name = "playerChoice" value='2'{% if isPlayerTurn == False  or isSolved or isDraw %} disabled {% endif %}></center></th><th><center><input type ="radio" class="topRow" name = "playerChoice" value='3'{% if isPlayerTurn == False or isSolved or isDraw %} disabled {% endif %}></center></th><th><center><input type ="radio" class="topRow" name = "playerChoice" value='4'{% if isPlayerTurn == False or isSolved or isDraw %} disabled {% endif %}></center></th><th><center><input type ="radio" class="topRow" name = "playerChoice" value='5'{% if isPlayerTurn == False or isSolved or isDraw %} disabled {% endif %}></center></th><th><center><input type ="radio" class="topRow" name = "playerChoice" value='6'{% if isPlayerTurn == False or isSolved or isDraw %} disabled {% endif %}></center></th></tr>
+						
+						{% for row in boardState %}
+							<tr>
+							{% for cell in row %}
+								<td {% if cell.0 == True %}class="{% if cell.1 == True %}danger{% else %}warning{% endif %}"{% endif %}><center>{% if cell.0 == False %} <input type ="radio" disabled>{% else %}{% if cell.1 == True %} <p>X</p>{% else %}<p>O</p> {% endif %}{% endif %}</center></td>
+							{% endfor %}
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+				<button type="submit" class="btn btn-default" {%if isSolved or isDraw %} disabled {% endif %}>Take Turn</button>
+				<button type="button" id ="playAgain" class ="btn btn-default" onclick="urlFn()">Play Again</button><!--different onclick needed-->
+				<button type="button" id ="newGame" class ="btn btn-default" onclick="urlFn()">New Game</button>
+				<input type="hidden" id="boardState" name="boardState">
+				<input type="hidden" id="legalMoves" name="legalMoves" value = "{{legalMoves}}">
+				<input type="hidden" id="playerTurn" name="playerTurn" value = "{{playerTurn}}">
+				<input type="hidden" id="player1" name="player1" value = "{{player1}}">
+				<input type="hidden" id="player2" name="player2" value = "{{player2}}">
+				<input type="hidden" id="isPlayerTurn" name="isPlayerTurn" value = "{{isPlayerTurn}}">
+				<input type="hidden" id="player1MinimaxDepth" name="player1MinimaxDepth" value = "{{player1MinimaxDepth}}">
+				<input type="hidden" id="player1RecursionCount" name="player1RecursionCount" value = "{{player1RecursionCount}}">
+				<input type="hidden" id="player2MinimaxDepth" name="player2MinimaxDepth" value = "{{player2MinimaxDepth}}">
+				<input type="hidden" id="player2RecursionCount" name="player2RecursionCount" value = "{{player2RecursionCount}}">
+			</div>
+		</div>
+	</form>
+
+{% load staticfiles %}
+<!--<script type="text/javascript" src="{% static 'connect4/connect4Js.js' %}"></script>-->
+<script type="text/css" src="{% static 'personal/css/bootstrap.min.css' %} "></script>
+<script type="text/javascript" src="{% static 'c4nn/takeTurn.js' %}"></script>
+{% endblock %}
+
+{% block description %}
+{% include "personal/includes/descriptionModal.html" with modalTitle="Connect 4 A.I." modalBody="<p>The goal of this project was to apply the <a href='https://en.wikipedia.org/wiki/Minimax'>minimax algorithm</a> to the game of connect 4 in order to create an AI that a user can play against.</p><p>First, the board is read by the computer and converted into a 2d array made up of a class giving info on the state of the board. In order to choose a move, the program generates a tree which has the current board as its root. Each subsequent level of the tree contains possible moves that could be made from the positions on the level above. The algorithm uses <a href='https://en.wikipedia.org/wiki/Alpha%E2%80%93beta_pruning'>Alpha-Beta pruning</a> in order to eliminate branches that can no longer contribute to the final result, which greatly reduces the amount of work to be done by the program.</p><p>It would take too long to generate a tree with all possible permutations of the game, so instead a maximum tree depth is set by the user in the difficulty setting box. This value represents how many moves ahead the algorithm will consider. A higher setting allows the program to make smarter moves, but requires more time to run. On the final level of the tree, each board is given a score according to a heuristic which attempts to score each board according to how favourable it is from the position of the computer player. It's these scores that are used to run the minimax algorithm which determines the move made by the program.</p>"%}
+{% endblock %}

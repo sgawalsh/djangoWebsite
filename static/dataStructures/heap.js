@@ -42,7 +42,7 @@ function extractRoot(){//sets last element to root and bubbles down to appropria
 	sessionStorage.setItem("heapArray", JSON.stringify(heapArray))	
 }
 
-function bubbleDown(heapArray, index){//finds largest value between index and existing children, if a larger child exists values are swapped and function is called recursively on child's index
+function bubbleDown(heapArray, index){
 	var largest = index
 	
 	if (heapArray[index] < heapArray[2 * index + 1] && !(typeof(heapArray[2 * index + 1]) == "undefined")){

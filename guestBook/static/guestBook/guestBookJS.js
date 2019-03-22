@@ -8,6 +8,13 @@ setColour()
 setDrawMode(0)
 loadCanvas()
 loadDrawChoiceList()
+setCanvasWidth()
+
+function setCanvasWidth(){
+	var width = document.getElementById("canvasWidth").offsetWidth
+	document.getElementById("myOriginalCanvas").width = width
+	document.getElementById("myCanvas").width = width
+}
 
 function setupFn(){//sets mouse location so user can draw on canvas
     window.setTimeout(function() {document.getElementById("wrapper").style.visibility = "visible";}, 1000);

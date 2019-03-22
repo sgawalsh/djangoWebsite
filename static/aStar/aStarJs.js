@@ -145,6 +145,7 @@ function setWallsFindPath(){//sets walls, Hvalues on each cell, and calls recurs
 	else{
 		var successPath = JSON.parse(sessionStorage.getItem("successPath"))
 		for (let i = 1; i < successPath.length - 1; i++){document.getElementById("x" + successPath[i][0] + ", y" + successPath[i][1] + "div").className = ""}
+		alert("No path available.")
 	}
 	sessionStorage.setItem("grid", JSON.stringify(grid))
 }

@@ -1,67 +1,74 @@
 {% extends "personal/header.html" %}
 
 {% block content %}
-
-<div class="form-inline">
-    <div class = "row">
-        <div class="col-md-4">
-            <h4>Draw Mode</h4>
-			<div class="btn-group" data-toggle="buttons">
-				<label class="btn btn-primary active" onclick="removeEvents(prevMode);setDrawMode(0)">
-					<input type="radio" name="options" id="option0" autocomplete="off">Free Line
-				</label>
-                <label class="btn btn-primary" onclick="removeEvents(prevMode);setDrawMode(1)">
-                        <input type="radio" name="options" id="option1" autocomplete="off" checked>Straight Line
-				</label>
-				
-				<label class="btn btn-primary" onclick="removeEvents(prevMode);setDrawMode(2)">
-					<input type="radio" name="options" id="option2" autocomplete="off"> Rectangle
-				</label>
-				<label class="btn btn-primary" onclick="removeEvents(prevMode);setDrawMode(3)">
-					<input type="radio" name="options" id="option3" autocomplete="off">Circle
-				</label>
-                <label class="btn btn-primary" onclick="removeEvents(prevMode);setDrawMode(4)">
-					<input type="radio" name="options" id="option4" autocomplete="off">Erase Rectangle 
-				</label>
+<div class="row">
+	<div class="col-md-12 col-sm-12">
+		<div class='container-fluid'>
+			<div class = "row">
+				<div class="col-md-6">
+					<h4>Draw Mode</h4>
+					<div class="btn-group" data-toggle="buttons">
+						<label class="btn btn-primary active" onclick="removeEvents(prevMode);setDrawMode(0)">
+							<input type="radio" name="options" id="option0" autocomplete="off">Free Line
+						</label>
+						<label class="btn btn-primary" onclick="removeEvents(prevMode);setDrawMode(1)">
+								<input type="radio" name="options" id="option1" autocomplete="off" checked>Straight Line
+						</label>
+						
+						<label class="btn btn-primary" onclick="removeEvents(prevMode);setDrawMode(2)">
+							<input type="radio" name="options" id="option2" autocomplete="off"> Rectangle
+						</label>
+						<label class="btn btn-primary" onclick="removeEvents(prevMode);setDrawMode(3)">
+							<input type="radio" name="options" id="option3" autocomplete="off">Circle
+						</label>
+						<label class="btn btn-primary" onclick="removeEvents(prevMode);setDrawMode(4)">
+							<input type="radio" name="options" id="option4" autocomplete="off">Erase Rectangle 
+						</label>
+					</div>
+				</div>
+				<div class="col-md-2">
+					<br><br>
+					<center>
+						<div class="input-group">
+							<span class="input-group-addon" id="basic-addon1">Line Width</span>
+							<input type="number" class="form-control" aria-describedby="basic-addon1" value = '3' id = "lineWidth" min = '1'>
+						</div>
+					</center>
+				</div>
+				<div class="col-md-4">
+					<div class="input-group">
+						<label for = "myRangeRed" style = "color:red;">R</label><input type="range" id="myRangeRed" value="90" min = '0' max = '255'><label id = 'rVal'>90</label>
+					</div>
+					<div class="input-group">
+						<label for = "myRangeGreen" style = "color:green;">G</label><input type="range" id="myRangeGreen" value="90" min = '0' max = '255' style = "background:red;"><label id = 'gVal'>90</label>
+					</div>
+					<div class="input-group">
+						<label for = "myRangeBlue" style = "color:blue;">B</label><input type="range" id="myRangeBlue" value="90" min = '0' max = '255'><label id = 'bVal'>90</label>
+					</div>
+					<div id="RGB" style="width: 82%; height: 20px; margin-left: 0;"></div>
+				</div>
 			</div>
-        </div>
-        <div class="col-md-2">
-            <br><br>
-            <div class="input-group">
-                <span class="input-group-addon" id="basic-addon1">Line Width</span>
-                <input type="number" class="form-control" aria-describedby="basic-addon1" value = '3' id = "lineWidth" min = '1'>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="input-group">
-                <label for = "myRangeRed" style = "color:red;">R</label><input type="range" id="myRangeRed" value="90" min = '0' max = '255'><label id = 'rVal'>90</label>
-            </div>
-            <div class="input-group">
-                <label for = "myRangeGreen" style = "color:green;">G</label><input type="range" id="myRangeGreen" value="90" min = '0' max = '255' style = "background:red;"><label id = 'gVal'>90</label>
-            </div>
-            <div class="input-group">
-                <label for = "myRangeBlue" style = "color:blue;">B</label><input type="range" id="myRangeBlue" value="90" min = '0' max = '255'><label id = 'bVal'>90</label>
-            </div>
-            <div id="RGB" style="width: 82%; height: 20px; margin-left: 0;"></div>
-        </div>
-    </div>
-</div>
-<br>
-<div id="wrapper" class="row" style="width: 1600px; height: 900px;">
-    <canvas id="myOriginalCanvas" width = "1600" height = "900" style="border:1px solid #000000; position: absolute; left: 0; z-index: 0;"></canvas>
-    <canvas id="myCanvas" width = "1600" height = "900" style="border:1px solid #000000; position: absolute; left: 0; z-index: 1;">Your browser does not support canvas.</canvas>
-</div>
-<br>
-<div>
-    <input type="text" class="form-control" id="exampleInputName" placeholder="User Name" style="width: 300px;">
-    <input class="btn btn-default" type="button" value = "Save Canvas" onclick="saveCanvas()" style = "position: relative; bottom: 34px; left: 300px;">
-    <input class="btn btn-default" type="button" value = "Reset Drawing" onclick="ctx.clearRect(0,0,1600,900)" style = "position: relative; bottom: 34px; left: 300px;">
-    <p><label for "drawingChoice">Filter By Contributor</label>
-        <select id = 'drawingChoice' class="btn btn-default"></select>
-        <input class="btn btn-default" type="button" value="Display Drawing" onclick="loadDrawing()" />
-    </p>
-	{% load staticfiles %}
-	<script src="{% static 'guestBook/guestBookJS.js'%}" type="text/javascript"></script>
+			<br>
+			<div id="wrapper" class="row" style="height: 900px;">
+				<div id="canvasWidth" class="col-md-12">
+					<canvas id="myOriginalCanvas" height = "900" style="border:1px solid #000000; position: absolute; left: 0; z-index: 0;"></canvas>
+					<canvas id="myCanvas" height = "900" style="border:1px solid #000000; position: absolute; left: 0; z-index: 1;">Your browser does not support canvas.</canvas>
+				</div>
+			</div>
+			<br>
+			<div>
+				<input type="text" class="form-control" id="exampleInputName" placeholder="User Name" style="width: 300px;">
+				<input class="btn btn-default" type="button" value = "Save Canvas" onclick="saveCanvas()" style = "position: relative; bottom: 34px; left: 300px;">
+				<input class="btn btn-default" type="button" value = "Reset Drawing" onclick="ctx.clearRect(0,0,1600,900)" style = "position: relative; bottom: 34px; left: 300px;">
+				<p><label for "drawingChoice">Filter By Contributor</label>
+					<select id = 'drawingChoice' class="btn btn-default"></select>
+					<input class="btn btn-default" type="button" value="Display Drawing" onclick="loadDrawing()" />
+				</p>
+				{% load staticfiles %}
+				<script src="{% static 'guestBook/guestBookJS.js'%}" type="text/javascript"></script>
+			</div>
+		</div>
+	</div>
 </div>
 
 {% csrf_token %}
