@@ -187,14 +187,16 @@ function saveCanvas(){//checks if userName has been set, then sends post request
                 'userDrawing': img,
                 "userName": userName,
             }//send user drawing to be saved locally
-        }).done(function(){console.log('saved')})
+        }).done(function(){
+			console.log('saved')
+			ctx.clearRect(0,0,1600,900)
+			loadCanvas()
+			var myNode = document.createElement("option")
+			myNode.value = userName
+			myNode.appendChild(document.createTextNode(userName  + " - " + document.getElementById("drawingChoice").getElementsByTagName("option").length))
+			document.getElementById("drawingChoice").appendChild(myNode)
+		})
         //location.reload()
-        ctx.clearRect(0,0,1600,900)
-        loadCanvas()
-        var myNode = document.createElement("option")
-        myNode.value = userName
-        myNode.appendChild(document.createTextNode(userName  + " - " + document.getElementById("drawingChoice").getElementsByTagName("option").length))
-        document.getElementById("drawingChoice").appendChild(myNode)
     }
 }
 
