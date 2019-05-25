@@ -1,14 +1,14 @@
 from c4nn.engine import board, cell
-import c4nn.config as config, pdb, random, numpy, time
+import c4nn.config as config, pdb, random, numpy
 from tqdm import tqdm
 
-class miniTree():
+class miniTree():# minimax tree class, contains minimax algorithm
 	def __init__(self, board, isRedTurn, maxLevel):
 		self.root = miniNode(board, isRedTurn)
 		miniTree.genTreeMM(self.root, -config.maxBoardVal, config.maxBoardVal, 0, maxLevel)
 	
 	def __str__(self, maxLevel = 100):
-		return self.root.__str__(maxLevel, 0)				
+		return self.root.__str__(maxLevel, 0)
 				
 	def genTreeMM(currNode, alpha, beta, currDepth, maxDepth):
 		if currNode.rowNum and currNode.board.checkWin(currNode.rowNum, currNode.colNum, not currNode.isRedTurn):
@@ -62,7 +62,7 @@ class miniTree():
 				return 0
 			self = miniTree(newBoard, not self.root.isRedTurn, config.miniMaxDefaultDepth)
 				
-class miniNode(config.node):
+class miniNode(config.node):#contains heuristic fn
 	def __init__(self, board, isRedTurn, parent = None, rowNum = None, colNum = None):
 		config.node.__init__(self, board, isRedTurn, parent, rowNum, colNum)
 		self.score = 0
@@ -82,7 +82,7 @@ class miniNode(config.node):
 				score += self.iterLoop(rowNum, rowDir, colNum, colDir, addFour, self.isRedTurn)
 		return score
 		
-	def iterLoop(self, rowNum, rowDir, colNum, colDir, addFour, isRedTurn):
+	def iterLoop(self, rowNum, rowDir, colNum, colDir, addFour, isRedTurn):# for each four cells look at tile, if colour matches increase count, use count to return score for selected cell and direction
 		count = 0
 		iterScore = 0
 		for i in range(4):
@@ -120,10 +120,8 @@ def genBoardActionPairs(sampleSize, passFn):
 	boards = []
 	returnVals = []
 	
-	
 	for _1 in tqdm(range(sampleSize)):
 		isRedTurn = random.choice([True, False])
-		#for _ in range(random.randint(0,15)):
 		for _2 in range(random.randint(0,42)):
 			simBoard, rowNum, colNum = simBoard.serveNextState(random.choice(simBoard.legalMoves), isRedTurn)
 			if simBoard.checkWin(rowNum, colNum, isRedTurn) or simBoard.checkDraw():
@@ -133,7 +131,3 @@ def genBoardActionPairs(sampleSize, passFn):
 		boards.append([board(simBoard.board, simBoard.legalMoves), isRedTurn])
 		returnVals.append(passFn(myTree))
 	return (boards, returnVals)
-
-# myTree = miniTree(board(), False, config.miniMaxDefaultDepth)
-# print(myTree)
-# print(myTree.root.getChildScores())

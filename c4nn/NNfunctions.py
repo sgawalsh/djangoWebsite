@@ -3,6 +3,8 @@ import numpy, c4nn.minimax as minimax, pickle, os, pdb, random, c4nn.config as c
 from keras.utils import np_utils
 from sklearn.preprocessing import MinMaxScaler
 
+#handles general NN functions, transfering board state to inputs and vice versa, creating basic models
+
 def getConv(boardList):
 	boardArrs = []
 	for board in boardList:
@@ -76,11 +78,11 @@ def boardToInputs(board, isRedTurn):
 		for cell in rowNum:
 			#rowArr.append([cell.isFilled * (1 if cell.isRed == board[1] else -1)])# O = -1, _ = 0, X = 1
 			if cell.isFilled:
-				if cell.isRed == isRedTurn:
+				if cell.isRed == isRedTurn: # friendly cell
 					rowArr.append([0, 1, 0])
-				else:
+				else: # enemy cell
 					rowArr.append([0, 0, 1])
-			else:
+			else:# not filled
 				rowArr.append([1, 0, 0])
 		boardArr.append(rowArr)
 	return boardArr
@@ -110,10 +112,3 @@ def getLegalMoveProbs(model, boardInputs):
 def scaleResults(results):
 	scaler = MinMaxScaler(feature_range = (0, 0.9999))
 	return scaler.fit_transform(numpy.array(results).reshape(-1, 1))
-	
-	
-	
-	
-	
-	
-	

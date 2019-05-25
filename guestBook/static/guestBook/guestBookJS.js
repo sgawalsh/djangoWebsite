@@ -165,14 +165,10 @@ function removeEvents(prevMode){//removes event listeners set by previous drawin
     }
 }
 
-function saveCanvasOriginal(){//checks if userName has been set, then sends post request saving source canvas and user drawing to server
+function saveCanvas(){//checks if userName has been set, then sends post request saving source canvas and user drawing to server
     var userName = document.getElementById("exampleInputName").value
     if (userName == ""){alert("Please enter a user name to save your drawing.")}
     else{
-        loadCanvas()
-        var originalCanvas = document.getElementById('myOriginalCanvas')
-        originalCanvas.getContext("2d").drawImage(canvas,0,0)//draw user drawing on original canvas
-        var newOriginal = originalCanvas.toDataURL("image/png")
         var img = canvas.toDataURL("image/png")
         var csrftoken = getCookie('csrftoken');
 
@@ -188,10 +184,9 @@ function saveCanvasOriginal(){//checks if userName has been set, then sends post
             type: "POST",
             url: "/guestBook/saveCanvas/",
             data:{ 
-                "newOriginal": newOriginal,
                 'userDrawing': img,
                 "userName": userName,
-            }//send combined and user drawing to be saved locally
+            }//send user drawing to be saved locally
         }).done(function(){console.log('saved')})
         //location.reload()
         ctx.clearRect(0,0,1600,900)
@@ -200,40 +195,6 @@ function saveCanvasOriginal(){//checks if userName has been set, then sends post
         myNode.value = userName
         myNode.appendChild(document.createTextNode(userName  + " - " + document.getElementById("drawingChoice").getElementsByTagName("option").length))
         document.getElementById("drawingChoice").appendChild(myNode)
-        
-    }
-}
-
-function saveCanvas(){//checks if userName has been set, then sends post request saving source canvas and user drawing to server
-    var userName = document.getElementById("exampleInputName").value
-    if (userName == ""){alert("Please enter a user name to save your drawing.")}
-    else{
-        loadCanvas()
-        var csrftoken = getCookie('csrftoken');
-
-        $.ajaxSetup({
-            beforeSend: function(xhr, settings) {
-                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
-                }
-            }
-        });
-
-        var userImg = canvas.toDataURL("image/png")
-
-        $.ajax({
-            type: "POST",
-            url: "/guestBook/saveCanvas/",
-            data:{ 
-                "userName": userName,
-                'userDrawing': userImg,
-            }//send user drawing to be saved locally
-        }).done(function(){
-            console.log('saved')
-            loadDrawChoiceList()//load new contributing images
-            ctx.clearRect(0,0,1600,900)
-            createOriginal()
-        })
     }
 }
 
@@ -272,25 +233,34 @@ function createOriginal(){//post request gets list of user drawings and draws ea
         type: "POST",
         url: "/guestBook/createCanvas/"
     }).done(function(newCanvas){
-        myCtx = document.getElementById("myOriginalCanvas").getContext('2d')
+        var myCtx = document.getElementById("myOriginalCanvas").getContext('2d')
         myCtx.fillStyle = "#FFFFFF"
         myCtx.fillRect(0,0,1600,900)
-        var img = new Image()
-        img.onload = function(){myCtx.drawImage(img,0,0)}
         for(let i = 0; i < newCanvas["userDrawings"].length; i++){
-            img.src = newCanvas["userDrawings"][i]
-            myCtx.drawImage(img,0,0)//is this necessary?
-        }
-        var newOriginal = document.getElementById("myOriginalCanvas").toDataURL("image/png")
-        $.ajax({
-            type: "POST",
-            url: "/guestBook/setOriginal/",
-            data: {
-                "newOriginal": newOriginal
+            var img = new Image()
+            img.onload = function(){
+                var myCtx = document.getElementById("myOriginalCanvas").getContext('2d')
+                myCtx.drawImage(img,0,0)
+                console.log("drew image")
             }
-        }).done(function(){
-            console.log("we are here")
-        })
+            img.src = newCanvas["userDrawings"][i]
+            //myCtx.drawImage(img,0,0)//is this necessary?
+            console.log(i)
+        }
+    })
+    newOriginal()
+}
+
+function newOriginal(){
+    var newOriginal = document.getElementById("myOriginalCanvas").toDataURL("image/png")
+    $.ajax({
+        type: "POST",
+        url: "/guestBook/setOriginal/",
+        data: {
+            "newOriginal": newOriginal
+        }
+    }).done(function(){
+        console.log("we are here")
     })
 }
 
@@ -376,3 +346,35 @@ function csrfSafeMethod(method) {
     // these HTTP methods do not require CSRF protection
     return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
 }
+
+document.addEventListener("saveCanvasEvent", function(e) {
+    var newOriginal = document.getElementById('myOriginalCanvas').toDataURL("image/png")
+    var img = canvas.toDataURL("image/png")
+    var csrftoken = getCookie('csrftoken');
+    var userName = document.getElementById("exampleInputName").value
+
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    });
+
+    $.ajax({
+        type: "POST",
+        url: "/guestBook/saveCanvas/",
+        data:{ 
+            "newOriginal": newOriginal,
+            'userDrawing': img,
+            "userName": userName,
+        }//send combined and user drawing to be saved locally
+    }).done(function(){console.log('saved')})
+    //location.reload()
+    ctx.clearRect(0,0,1600,900)
+    loadCanvas()
+    var myNode = document.createElement("option")
+    myNode.value = userName
+    myNode.appendChild(document.createTextNode(userName  + " - " + document.getElementById("drawingChoice").getElementsByTagName("option").length))
+    document.getElementById("drawingChoice").appendChild(myNode)
+});

@@ -1,16 +1,15 @@
-import pdb, c4nn.config, random
+import pdb, c4nn.config as config, random
 
-class board:
+class board:# board class, contains game state and handles changing board state, checks for end-game conditions
 
 	def __init__(self, prevBoard = None, legalMoves = None):
 		self.board = []
-		if prevBoard: #copy existing
+		if prevBoard: # copy existing
 			self.legalMoves = legalMoves.copy()
 			for row in range(6):
 				newRow = []
 				for col in range(7):
-					newCell = cell(prevBoard[row][col].isFilled, prevBoard[row][col].isRed)
-					newRow.append(newCell)
+					newRow.append(cell(prevBoard[row][col].isFilled, prevBoard[row][col].isRed))
 				self.board.append(newRow)
 		else: #initial board
 			self.legalMoves = [0,1,2,3,4,5,6]
@@ -79,10 +78,7 @@ class board:
 		return 5
 	
 	def checkWin(self, row, col, isRed):
-		if self.checkHori(row, col, isRed) or self.checkVert(row, col, isRed) or self.checkDiagAsc(row, col, isRed) or self.checkDiagDesc(row, col, isRed):
-			return True
-		else:
-			return False
+		return self.checkHori(row, col, isRed) or self.checkVert(row, col, isRed) or self.checkDiagAsc(row, col, isRed) or self.checkDiagDesc(row, col, isRed)
 		
 	def checkHori(self, row, col, isRed):
 		for i in range(4):
@@ -151,18 +147,18 @@ class cell:
 		self.isFilled = isFilled
 		self.isRed = isRed
 		
-def runGame():
+def runGame(): #mini test fn to run game between two players in console
 	myBoard = board()
 
 	gameOver = False
 	isRedTurn = True
 
 	while (not gameOver):
-		colNum = int(input("Which column will you play? "))
+		colNum = int(input("Which column will you play?\n> "))
 		rowNum = myBoard.dropPiece(colNum, isRedTurn)
 		myBoard.printBoard()
 		if myBoard.checkWin(rowNum, colNum, isRedTurn):
-			print("The game was won by someone!!! I don't know who though.")
+			print("The game was won by " + ("Red" if isRedTurn else "Yellow") + "!")
 			gameOver = True
 		elif myBoard.checkDraw():
 			print("It's a draw!")

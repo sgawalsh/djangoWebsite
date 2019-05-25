@@ -7,7 +7,7 @@
 	{% if errorMessage %}
 		<div class="row">
 			<div class="col-md-12">
-				<p>{{errorMessage}}</p>
+				<p>{% autoescape off %}{{errorMessage}}{% endautoescape %}</p>
 			</div>
 		</div>
 	{% endif %}
@@ -44,7 +44,12 @@
 				<label for="player1MinimaxDepth" id="player1MinimaxDepthLabel" style="display: none">Minimax Depth</label>
 				<input type="number" id="player1MinimaxDepth" name="player1MinimaxDepth" min="1" max="8" style="display: none" value="4">
 				<label for="player1RecursionCount" id="player1RecursionCountLabel" style="display: none">Recursion Count</label>
-				<input type="number" id="player1RecursionCount" name="player1RecursionCount" min="1" max="500" style="display: none" value="100">
+				<input type="number" id="player1RecursionCount" name="player1RecursionCount" min="1" max="50" style="display: none" value="30">
+				<div class="checkbox" id = "player1StochasticDiv" style="display: none">
+					<label>
+						<input type="checkbox" value="" id="player1Stochastic" name ="player1Stochastic">Stochastic Play
+					</label>
+				</div>
 			</div>
 			<div class="col-md-6 col-sm-6" id="player2Files">
 				<label for="player2Policy" id="player2PolicyLabel" style="display: none">Policy Network</label>
@@ -54,7 +59,12 @@
 				<label for="player2MinimaxDepth" id="player2MinimaxDepthLabel" style="display: none">Minimax Depth</label>
 				<input type="number" id="player2MinimaxDepth" name="player2MinimaxDepth" min="1" max="8" style="display: none" value="4">
 				<label for="player2RecursionCount" id="player2RecursionCountLabel" style="display: none">Recursion Count</label>
-				<input type="number" id="player2RecursionCount" name="player2RecursionCount" min="1" max="500" style="display: none" value="100">
+				<input type="number" id="player2RecursionCount" name="player2RecursionCount" min="1" max="50" style="display: none" value="30">
+				<div class="checkbox" id = "player2StochasticDiv" style="display: none">
+					<label>
+						<input type="checkbox" value="" id="player2Stochastic" name ="player2Stochastic">Stochastic Play
+					</label>
+				</div>
 			</div>
 		</div>
 		<br>
@@ -71,5 +81,5 @@
 {% endblock %}
 
 {% block description %}
-{% include "personal/includes/descriptionModal.html" with modalTitle="Connect 4 A.I." modalBody="<p>The goal of this project was to apply the <a href='https://en.wikipedia.org/wiki/Minimax'>minimax algorithm</a> to the game of connect 4 in order to create an AI that a user can play against.</p><p>First, the board is read by the computer and converted into a 2d array made up of a class giving info on the state of the board. In order to choose a move, the program generates a tree which has the current board as its root. Each subsequent level of the tree contains possible moves that could be made from the positions on the level above. The algorithm uses <a href='https://en.wikipedia.org/wiki/Alpha%E2%80%93beta_pruning'>Alpha-Beta pruning</a> in order to eliminate branches that can no longer contribute to the final result, which greatly reduces the amount of work to be done by the program.</p><p>It would take too long to generate a tree with all possible permutations of the game, so instead a maximum tree depth is set by the user in the difficulty setting box. This value represents how many moves ahead the algorithm will consider. A higher setting allows the program to make smarter moves, but requires more time to run. On the final level of the tree, each board is given a score according to a heuristic which attempts to score each board according to how favourable it is from the position of the computer player. It's these scores that are used to run the minimax algorithm which determines the move made by the program.</p>"%}
+{% include "personal/includes/descriptionModal.html" with modalTitle="Connect 4 Neural Nets" modalBody="<p>This page is was built to be used as a sort of testing ground for neural nets that can be created using my alphaC4 project, available <a href='https://github.com/sgawalsh/alphaC4'>here</a> on github. The alphaC4 project lets a user design a neural net, and train it using a self-play learning process. A more thorough description of the techniques used when writing the project is available on the readme, accessible from the link above.</p><p>The page is also capable of a few different modes of play. The user can choose from several player types: “Human Player” requires the user to input the move to be made, the “Minimax Algorithm” option plays the move chosen by the minimax algorithm and heuristic that can be found in the alphaC4 repo. “Default Neural Net” uses a policy and value neural net hosted on the server. Finally the “Upload Neural Net” option lets a user upload a policy and value network that are temporarily stored on the server and used instead of the default option provided.</p><p>The page also provides three separate modes of play. With all player combinations, the “Take Turn” button will be available, if the current player is a “Human Player” a move must be input to proceed, otherwise the move will be made automatically according to the player type. This lets the user control the pace of the game and go through at their own pace.</p><p>The “Autoplay” checkbox becomes available when a non-human player is present in the game. In this mode, human players still submit their moves as usual, but all other player type moves are made automatically. In the case where two non-human players play against each other, the game will be played automatically, with the board being updated each turn until the game has ended.</p><p>In the case where two neural net opponents are facing each other, the “Backend Autoplay” button will become available when the “Autoplay” button is checked. In this mode, the player sets the amount of games to be played, and on submission, the games will play on the server, and bring the user back to the initial page with the results of the series. This mode plays much faster than the “Autoplay” mode as the neural nets are only loaded once initially, instead of on each turn. This mode is ideal if the user wants to compare the effectiveness of two neural nets.</p><p>The “Play Again” button resets the current board, while the “New Game” button takes the user back to the initial player selection page.</p>"%}
 {% endblock %}
